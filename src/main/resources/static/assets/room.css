@@ -1,0 +1,183 @@
+.input-container.select-menu {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal__body.add-client .input-container h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.input-layout.select-menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    padding: 10px 15px;
+    transition: border-color 0.2s;
+}
+
+.input-layout.select-menu .text {
+    flex-grow: 1;
+    padding: 0;
+    margin: 0;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    color: var(--text-color-dark, #333);
+}
+
+.input-layout.select-menu i {
+    margin: 5px;
+    transition: transform 0.3s;
+    font-size: 20px;
+}
+
+.input-container.select-menu.active i {
+    transform: rotate(180deg);
+}
+
+.input-container .options {
+    position: absolute;
+    display: none;
+    width: 100%;
+    top: 100%;
+    left: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: var(--white-color, #fff);
+    border: 1.5px solid var(--border-color, #ddd);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    padding: 0;
+    list-style: none;
+    margin-top: -1px;
+    z-index: 20;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.input-container.select-menu.active .options {
+    display: block;
+}
+
+.input-container .option {
+    width: 100%;
+    position: relative;
+    padding: 10px 15px;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color 0.2s;
+}
+
+.input-container .option-text {
+    margin-left: 0;
+    font-size: 14px;
+}
+
+.input-container .option:hover {
+    background-color: var(--hover-color, #f0f0f0);
+}
+
+.add-client.room {
+    width: 100%;
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.add-client__button.openModal.room {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: var(--secondary-color, #6c757d);
+    color: var(--white-color, #fff);
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-client__button.openModal.room i {
+    font-size: 20px;
+    margin-left: 8px;
+}
+
+.add-client__button.openModal.room:hover {
+    background-color: var(--secondary-color-dark, #5a6268);
+}
+
+.modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+}
+
+.modal.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.modal .add-client__form.assign-room {
+    background-color: var(--white-color, #fff);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+    z-index: 10;
+}
+
+.modal .contact-input.assign-room {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+}
+
+.modal .contact-input.assign-room > .input-container {
+    flex: 1;
+}
+
+.modal .input-container h3 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.modal .input-layout {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    padding: 0 10px;
+}

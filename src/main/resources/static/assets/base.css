@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@keyframes growth {
+    from{
+        transform: scale(0.7);
+    }
+    
+    to {
+        transform: scale(1);
+    }
+}
+
+
+:root{
+    --text-dark: rgba(30, 44, 82, 1);
+    --text-light: rgba(76, 110, 205, 1);
+    --text-un-active: #575757;
+    --primary-color-super-light: rgb(168, 186, 235);
+    --primary-color-light: rgba(148, 168, 225, 1);
+    --primary-color-dark: rgba(46, 66, 123, 1);
+    --primary-black: #333;
+    --background-color: rgba(247, 247, 249, 1);
+    --text-regular: 400;
+    --text-medium: 500;
+    --text-bold: 700;
+    --text-extrabold: 800;
+    --text-black: 900;
+    --card-padding: 1.8rem 2rem;
+    --card-border-radius: 30px;
+    --card-shadow: 0 1.1rem 50px 10px rgba(143, 163, 210, 0.2);
+
+
+    --section-margin: 2rem 2.8rem 0rem 2.8rem;
+    --title-to-card-margin: 1.6rem 0 1.2rem 0;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: inherit;
+}
+
+body{
+    background-color: var(--background-color);
+}
+
+html {
+    font-size: 62.5%;
+    font-family: "Roboto", sans-serif;
+    box-sizing: border-box;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 1rem;
+    font-weight: var(--text-regular);
+}
+
+h1, h2, h3, h4, h5, h6, p, a {
+    margin: 0;
+    padding: 0;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text-un-active);
+    white-space: nowrap;
+}
+
+h1{
+    font-weight: var(--text-black);
+}
+
+h3{
+    font-weight: var(--text-regular);
+}
+
+.grid{
+    width: 1200px;
+    max-width: 100%;
+}
+
+.grid__full-width{
+    width: 100%;
+}
+
+.grid__row{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+svg {
+    width: fit-content;
+    height: fit-content;
+    display: inline-block;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}

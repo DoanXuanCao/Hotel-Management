@@ -1,0 +1,142 @@
+.modal__body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: transparent;
+}
+
+.modal__inner {
+    display: flex;
+    align-items: stretch;
+    max-width: 1200px;
+    width: 90%;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--white-color, #fff);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.auth-form.update-form {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    padding: 30px 40px;
+}
+
+/* Header Padding */
+.auth-form__header {
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+/* Form Group Container for overall vertical spacing */
+.auth-form__group-container.register.grid__row {
+    width: 100%;
+    /* Use a gap for consistent vertical spacing between all input groups */
+    gap: 15px; 
+    padding: 0;
+}
+.auth-form__group.doubled.grid__row{
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-between; 
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.auth-form__group.doubled .auth-form__input-container {
+    flex: 1;
+    width: 100%;
+}
+
+.auth-form__group.doubled .input-container.select-menu {
+    flex: 1;
+    width: 100%;
+}
+
+.input-container.select-menu {
+    position: relative;
+    flex: initial; 
+    width: 100%;
+}
+
+.input-container .input-layout {
+    margin-top: 0;
+}
+
+.input-layout.select-menu .text {
+    color: var(--text-un-active, #999);
+    transition: color 0.2s ease;
+}
+
+.input-container.select-menu.active .input-layout.select-menu {
+    border: 2px solid var(--primary-color-dark, #000) !important; 
+}
+
+.input-label-date {
+    display: block;
+    font-size: 13px;
+    color: var(--text-color-light, #666);
+    margin-bottom: 2px;
+    padding-left: 12px;
+    font-weight: 500;
+}
+
+.add-client.new-employee {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.add-client.new-employee .add-client__button {
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.action-btn {
+    background: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    padding: 6px 10px;
+    margin: 0 4px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+.action-btn i {
+    font-size: 16px;
+}
+
+.edit-btn {
+    color: var(--primary-color, #4a90e2); 
+}
+
+.edit-btn:hover {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-color: rgba(74, 144, 226, 0.3);
+}
+
+.delete-btn {
+    color: var(--error-color, #e74c3c);
+}
+
+.delete-btn:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+.error-message {
+    padding: 20px;
+    text-align: center;
+    color: var(--error-color, #e74c3c);
+    font-style: italic;
+    font-weight: 500;
+}

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <link rel="stylesheet" href="./assets/main.css">
+  <link rel="stylesheet" href="./assets/base.css">
+  <link rel="stylesheet" href="./assets/icon/themify-icons/themify-icons.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <title>App</title>
+</head>
+
+<body>
+  <div class="main">
+    <div class="header">
+    </div>
+    <div class="container grid__row">
+      <!-- navigation -->
+      <div class="nav-section__container grid__row">
+        <div class="nav-section__name">Ho<span class="half-end">MS</span></div>
+        <div class="nav-section">
+          <div class="nav__links grid__row">
+          <li class="nav__links-item active"><a href="#"><i class="ti-menu nav__icon"></i>Dashboard</a></li>
+          <li class="nav__links-item"><a href="/client"><i class="ti-user nav__icon"></i>Guest</a></li>
+          <li class="nav__links-item"><a href="/hotels"><i class="ti-home nav__icon"></i>Hotels</a></li>
+          <li class="nav__links-item"><a href="/reservation"><i class="ti-calendar nav__icon"></i>Reservation</a></li>
+          <li class="nav__links-item"><a href="/setting"><i class="ti-settings nav__icon"></i>Setting</a></li>
+        </div>
+        <div class="nav__links-item logout"><a href="/"><i class="ti-back-left nav__icon"></i>Log out</a></div>
+      </div>
+    </div>
+
+    <!-- dash board section -->
+    <div class="middle__section grid__row">
+      <div class="section-header grid__row">
+        <h1 class="dashboard__header">Dashboard</h1>
+      </div>
+
+      <!-- list -->
+      <div class="dashboard__list grid__row">
+        <div class="dashboard__item">
+          <div class="item__left grid__row">
+          <i class="material-icons customer">group</i>
+          <h3>Total Guest</h3>
+          <h1>—</h1>
+          </div>
+        </div>
+
+        <div class="dashboard__item">
+          <div class="item__left grid__row">
+            <i class="material-icons booking">book</i>
+            <h3>Total Booking</h3>
+            <h1>—</h1>
+          </div>
+        </div>
+
+        <div class="dashboard__item">
+          <div class="item__left grid__row">
+            <i class="material-icons amount">insert_chart</i>
+            <h3>Total Amount</h3>
+            <h1></h1>
+          </div>
+        </div>
+      </div>
+      <!-- list -->
+
+      <!-- Pending Requests -->
+      <div class="booking__status recent_reservation_table" style="margin-bottom:24px;">
+        <h1 class="status__header" style="display:flex;align-items:center;gap:10px;">
+          Pending Requests
+          <span id="pendingCount" style="background:#f59e0b;color:#fff;border-radius:20px;padding:2px 12px;font-size:14px;font-weight:600;">0</span>
+        </h1>
+        <table class="dashboard__table">
+          <thead>
+            <tr>
+              <th>CUSTOMER NAME</th>
+              <th>ROOM</th>
+              <th>HOTEL</th>
+              <th>CHECK IN</th>
+              <th>CHECK OUT</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="pendingTableBody">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- table -->
+      <div class="booking__status recent_reservation_table">
+        <h1 class="status__header">Recent Reservations</h1>
+        <table class="dashboard__table">
+          <thead>
+            <tr>
+              <th>CUSTOMER NAME</th>
+              <th>ROOM</th>
+              <th>HOTEL</th>
+              <th>EMPLOYEE</th>
+              <th>CHECK IN</th>
+              <th>CHECK OUT</th>
+              <th>PAID AMOUNT</th>
+              <th>STATUS</th>
+              <th>ACTIONS</th>
+              </tr>
+          </thead>
+          <tbody id="recentTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="footer">
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

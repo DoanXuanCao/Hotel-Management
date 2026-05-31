@@ -1,0 +1,70 @@
+.modal__body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.modal__inner{
+    padding: 10px 20px;
+}
+
+.auth-form.register-form{
+    margin: 0;
+    flex: 1;
+}
+
+.auth-form__header.grid__row{
+    align-self: flex-end;
+}
+
+.auth-form__group.doubled.grid__row{
+    width: 100%;
+    align-items: center;
+}
+
+.add-client.new-employee{
+  justify-content: flex-end;
+  padding-bottom: 10px;
+}
+
+.auth-form__input-container{
+    flex: 0.4;
+}
+
+.modal .input-layout{
+    border-radius: 30px;
+    padding: 4px 0px;
+    border-color: var(--primary-black);
+}
+
+.modal .input-layout .text{
+    margin-left: 9px;
+    font-size: 12px;
+}
+
+.modal .input-container.select-menu{
+    width: auto;
+    flex: 1;
+}
+
+.input-container .input-layout{
+    margin-top: 0rem;
+}
+
+.input-layout.select-menu .text{
+    color: var(--text-un-active);
+}
+
+.input-container.select-menu.active .options{
+    margin-top: 8px;
+}
+
+.add-client.new-employee .add-client__button{
+    padding: 16px 10px;
+}
+
+.input-container.select-menu.active .input-layout.select-menu{
+    border: 2px solid #000  !important;
+}
+

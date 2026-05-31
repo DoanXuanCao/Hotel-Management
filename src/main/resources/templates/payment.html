@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="reservation-id" th:content="${reservationId}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <link rel="stylesheet" href="/assets/main.css">
+  <link rel="stylesheet" href="/assets/base.css">
+  <link rel="stylesheet" href="/assets/room.css">
+  <link rel="stylesheet" href="/assets/payment.css">
+  <link rel="stylesheet" href="/assets/icon/themify-icons/themify-icons.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <title>App</title>
+</head>
+<body>
+  <div class="main">
+    <div class="header">
+    </div>
+    <div class="container grid__row">
+      <div class="nav-section__container grid__row">
+        <div class="nav-section__name">Ho<span class="half-end">MS</span></div>
+        <div class="nav-section">
+          <div class="nav__links grid__row">
+            <li class="nav__links-item"><a href="/homepage"><i class="ti-menu nav__icon"></i>Dashboard</a></li>
+            <li class="nav__links-item"><a href="/client"><i class="ti-user nav__icon"></i>Client</a></li>
+            <li class="nav__links-item"><a href="/hotels"><i class="ti-home nav__icon"></i>Room</a></li>
+            <li class="nav__links-item active"><a href="/reservation"><i class="ti-calendar nav__icon"></i>Reservation</a></li>
+            <li class="nav__links-item"><a href="/setting"><i class="ti-settings nav__icon"></i>Setting</a></li>
+          </div>
+          <div class="nav__links-item logout"><a href="#"><i class="ti-back-left nav__icon"></i>Log out</a></div>
+        </div>
+      </div>
+      <div class="middle__section grid__row">
+          <div class="section-header grid__row">
+              <h1 class="dashboard__header">Payment</h1>
+          </div>
+          <div class="booking__status">
+            <table>
+              <thead>
+                <tr>
+                  <th>CUSTOMER NAME</th>
+                  <th>ROOM NUMBER</th>
+                  <th>HOTEL NAME</th>
+                  <th>CHECK IN</th>
+                  <th>CHECK OUT</th>
+                  <th>PAID AMOUNT</th>
+                  <th>PAYMENT DATE</th>
+                  <th>METHOD</th>
+                  <th>ACTIONS</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="paymentTableBody">
+              </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+    </div>
+    </div>
+    <!-- Modal add client -->
+    <div class="modal" id="addPaymentModal">
+      <div class="add-client__form assign-room">
+      <div class="add-client__header">
+        <div class="header-text">
+          <h1>Add New Payment</h1>
+        </div>
+        <div class="close-button closeModal">
+          <i class="material-icons">close</i>
+        </div>
+      </div>
+      <div class="input-container select-menu" id="addMethodSelect">
+        <h3>Method</h3>
+        <div class="input-layout select-menu">
+          <span class="text" id="addStatusText">Select Method</span>
+          <i class="material-icons">arrow_drop_down</i>
+        </div>
+        <ul class="options" id="addStatusOptions">
+          <li class="option" data-value="CASH">
+            <span class="option-text">Cash</span>
+          </li>
+          <li class="option" data-value="BANKING">
+            <span class="option-text">Banking</span>
+          </li>
+          <li class="option" data-value="PAYPAL">
+            <span class="option-text">Paypal</span>
+          </li>
+          <li class="option" data-value="CREDIT_CARD">
+            <span class="option-text">Credit Card</span>
+          </li>
+          <li class="option" data-value="DEBIT_CARD">
+            <span class="option-text">Debit Card</span>
+          </li>
+        </ul>
+      </div>
+      <div class="input-container">
+        <h3>Amount</h3>
+        <div class="input-layout">
+          <i class="material-icons">attach_money</i>
+          <input type="text" id="newAmount" class="auth-form__input client" placeholder="Enter Amount">
+        </div>
+      </div>
+      <div class="input-container">
+        <h3>Paid Date</h3>
+        <div class="input-layout">
+          <i class="material-icons">calendar_month</i>
+          <input type="datetime-local" id="newPayDate" class="auth-form__input client">
+        </div>
+      </div>
+      <button class="auth__button add-client" id="confirmAddPayment">Confirm</button>
+    </div>
+  </div>
+  <!-- Modal add client -->
+  <script src="/script.js"></script>
+</body>
+</html>

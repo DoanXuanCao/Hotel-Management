@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.4.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="stylesheet" href="./assets/guest.css" />
+  <link rel="stylesheet" href="./assets/main.css">
+  <link rel="stylesheet" href="./assets/room.css">
+  <link rel="stylesheet" href="./assets/icon/themify-icons/themify-icons.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+  <title>HMS</title>
+  <style>
+    .my-reservations {
+      padding: 40px 5%;
+      background: #f9f9f9;
+    }
+
+    .my-reservations h2 {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .reservation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .reservation-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .reservation-card .res-info strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .reservation-card .res-info span {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-badge.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-badge.booked {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .status-badge.checked_in {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-badge.completed {
+      background: #cce5ff;
+      color: #004085;
+    }
+
+    .status-badge.canceled {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .no-reservations {
+      text-align: center;
+      color: #999;
+      padding: 32px;
+    }
+
+    .nav__logout {
+      margin-left: auto;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .nav__logout a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    @media(max-width: 600px) {
+      .reservation-card {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="nav__logo">HoMS</div>
+    <ul class="nav__links s">
+      <li class="link"><a href="#home">Home</a></li>
+      <li class="link"><a href="#hotels">Book</a></li>
+      <li class="link"><a href="#my-reservations">My Bookings</a></li>
+      <li class="link"><a href="#contact">Contact Us</a></li>
+    </ul>
+    <div class="nav__logout"><a href="/">Log out</a></div>
+  </nav>
+
+  <header id="home" class="section__container header__container">
+    <div class="header__image__container">
+      <div class="header__content">
+        <h1>The Best Booking Website</h1>
+        <p>Start booking and enjoy our good services at lowest price.</p>
+      </div>
+    </div>
+  </header>
+
+  <section id="hotels" class="section__container popular__container">
+    <h2 class="section__header">Popular Hotels</h2>
+    <div class="popular__grid" id="hotelGrid">
+      <p style="text-align:center;color:#999;">Loading hotels...</p>
+    </div>
+  </section>
+
+  <!-- My Reservations -->
+  <section id="my-reservations" class="my-reservations">
+    <h2 class="section__header">My Bookings</h2>
+    <div class="reservation-list" id="myReservationList">
+      <p class="no-reservations">Loading your bookings...</p>
+    </div>
+  </section>
+
+  <section id="blog" class="client">
+    <div class="section__container client__container">
+      <h2 class="section__header">What our client say</h2>
+      <div class="client__grid">
+        <div class="client__card">
+          <p>The booking process was seamless, and the confirmation was instant. I highly recommend HoMS for hassle-free
+            hotel bookings.</p>
+        </div>
+        <div class="client__card">
+          <p>The website provided detailed information about hotels, including amenities and photos, which helped me
+            make an informed decision.</p>
+        </div>
+        <div class="client__card">
+          <p>I was able to book a room within minutes, and the hotel exceeded my expectations. I appreciate HoMS's
+            efficiency and reliability.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact" class="footer">
+    <div class="section__container footer__container">
+      <div class="footer__col">
+        <h3>HoMS</h3>
+        <p>HoMS is a modern hospitality platform that brings travelers a convenient and enjoyable way to explore and
+          book accommodations.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Company</h4>
+        <p>About Us</p>
+        <p>Our Team</p>
+        <p>Blog</p>
+        <p>Book</p>
+        <p>Contact Us</p>
+      </div>
+      <div class="footer__col">
+        <h4>Legal</h4>
+        <p>FAQs</p>
+        <p>Terms &amp; Conditions</p>
+        <p>Privacy Policy</p>
+      </div>
+      <div class="footer__col">
+        <h4>Resources</h4>
+        <p>Social Media</p>
+        <p>Help Center</p>
+        <p>Partnerships</p>
+      </div>
+    </div>
+
+
+    <!-- Booking Modal -->
+    <div class="modal" id="bookingModal">
+      <div class="modal__overlay"></div>
+      <div class="modal__body add-client">
+        <div class="add-client__form assign-room">
+          <div class="add-client__header">
+            <div class="header-text">
+              <h1 id="bookingHotelName">Hotel</h1>
+            </div>
+            <div class="close-button closeModal">
+              <i class="material-icons">close</i>
+            </div>
+          </div>
+          <div class="sub-header-text">
+            <h3>Fill In The Form Below</h3>
+          </div>
+          <div class="contact-input assign-room">
+            <div class="input-container">
+              <h3>Check-In</h3>
+              <div class="input-layout guest">
+                <i class="material-icons">event</i>
+                <input type="date" id="bookingCheckin" class="auth-form__input client">
+              </div>
+            </div>
+            <div class="input-container">
+              <h3>Check-Out</h3>
+              <div class="input-layout guest">
+                <i class="material-icons">event_busy</i>
+                <input type="date" id="bookingCheckout" class="auth-form__input client">
+              </div>
+            </div>
+          </div>
+          <div class="input-container select-menu" id="roomSelectMenu">
+            <h3>Room</h3>
+            <div class="input-layout guest select-menu" id="bookingRoomToggle">
+              <span id="bookingRoomText" class="text">Select room</span>
+              <i class="material-icons">arrow_drop_down</i>
+              <ul class="options" id="bookingRoomOptions"></ul>
+            </div>
+          </div>
+          <div class="input-container">
+            <h3>Note (optional)</h3>
+            <div class="input-layout guest">
+              <i class="material-icons">edit_square</i>
+              <input type="text" id="bookingNote" class="auth-form__input client" placeholder="Special requests...">
+            </div>
+          </div>
+          <button class="auth__button add-client" id="confirmBookingBtn">Request Booking</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="guest.js"></script>
+</body>
+
+</html>

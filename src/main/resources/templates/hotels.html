@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <link rel="stylesheet" href="./assets/main.css">
+  <link rel="stylesheet" href="./assets/base.css">
+  <link rel="stylesheet" href="./assets/hotels.css">
+  <link rel="stylesheet" href="./assets/icon/themify-icons/themify-icons.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <title>App</title>
+</head>
+<body>
+  <div class="main">
+
+  <div class="header">
+  </div>
+
+  <div class="container grid__row">
+
+    <div class="nav-section__container grid__row">
+      <div class="nav-section__name">Ho<span class="half-end">MS</span></div>
+      <div class="nav-section">
+        <div class="nav__links grid__row">
+          <li class="nav__links-item"><a href="/homepage"><i class="ti-menu nav__icon"></i>Dashboard</a></li>
+          <li class="nav__links-item"><a href="/client"><i class="ti-user nav__icon"></i>Guest</a></li>
+          <li class="nav__links-item active"><a href="/hotels"><i class="ti-home nav__icon"></i>Hotels</a></li>
+          <li class="nav__links-item"><a href="/reservation"><i class="ti-calendar nav__icon"></i>Reservation</a></li>
+          <li class="nav__links-item"><a href="/setting"><i class="ti-settings nav__icon"></i>Setting</a></li>
+        </div>
+        <div class="nav__links-item logout"><a href="/"><i class="ti-back-left nav__icon"></i>Log out</a></div>
+      </div>
+    </div>
+    <div class="middle__section grid__row">
+      <div class="section-header grid__row">
+        <h1 class="dashboard__header">Hotel</h1>
+        <div class="manage-room-types">
+          <button class="add-client__button openModal"  data-target="#addHotelModal">Add Hotel
+            <i class="material-icons">settings</i>
+          </button>
+        </div>
+      </div>
+
+      <div class="booking__status room__table">
+        <div class="search-bar__container grid__row">
+          <form>
+            <div class="search-bar__section">
+              <i class="material-icons">search</i>
+              <input class="search-bar__input" type="search" placeholder="Search">
+            </div>
+          </form>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>NAME</th>
+              <th>ADDRESS</th>
+              <th>PHONE</th>
+              <th>EMAIL</th>
+              <th>RATING</th>
+              <th>ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody id="hotelTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+
+  </div>
+  </div>
+  <!-- Modal add client -->
+  <div class="modal" id="addHotelModal">
+      <div class="add-client__form assign-room">
+          <div class="add-client__header">
+                  <div class="header-text">
+                      <h1>Add New Hotel</h1>
+                  </div>
+                  <div class="close-button closeModal">
+                      <i class="material-icons">close</i>
+                  </div>
+              </div>
+          <div class="contact-input assign-room">
+              <div class="input-container">
+                  <h3>Hotel Name</h3>
+                  <div class="input-layout">
+                      <i class="material-icons">person</i>
+                      <input type="text" class="auth-form__input client" id="addHotelName" placeholder="Enter hotel name">
+                  </div>
+              </div>
+              <div class="input-container">
+                  <h3>Address</h3>
+                  <div class="input-layout">
+                      <i class="material-icons">numbers</i>
+                      <input type="text" class="auth-form__input client" id="addHotelAddress" placeholder="Enter hotel address">
+                  </div>
+              </div> 
+          </div>
+
+          <div class="input-container">
+              <h3>Phone</h3>
+              <div class="input-layout">
+                  <i class="material-icons">phone</i>
+                  <input type="text" class="auth-form__input client" id="addHotelPhone" placeholder="Enter hotel phone">
+              </div>
+          </div>
+
+          <div class="input-container">
+              <h3>Email</h3>
+              <div class="input-layout">
+                  <i class="material-icons">email</i>
+                  <input type="text" class="auth-form__input client" id="addHotelEmail" placeholder="Enter hotel email">
+              </div>
+          </div>
+
+          <div class="input-container">
+              <h3>Rating</h3>
+              <div class="input-layout">
+                  <i class="material-icons">star</i>
+                  <input type="number" class="auth-form__input client" id="addHotelRating" placeholder="Enter hotel rating (1-5)">
+              </div>
+          </div>
+
+          <button class="auth__button add-client" id="confirmAddHotelBtn">Confirm</button>
+      </div>
+  </div>
+  <!-- Modal update hotel -->
+  <div class="modal" id="updateHotelModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__body add-client">
+      <div class="add-client__form">
+        <div class="add-client__header">
+          <div class="header-text">
+            <h1>Update Hotel</h1>
+          </div>
+          <div class="close-button closeModal">
+            <i class="material-icons">close</i>
+          </div>
+        </div>
+
+        <div class="sub-header-text">
+          <h3>Edit the hotel details below</h3>
+        </div>
+
+        <!-- Hidden ID -->
+        <input type="hidden" id="updateHotelId">
+
+        <!-- Hotel Name -->
+        <div class="input-container">
+          <h3>Hotel Name</h3>
+          <div class="input-layout">
+            <i class="material-icons">business</i>
+            <input type="text" id="updateHotelName" class="auth-form__input client" placeholder="Enter hotel name">
+          </div>
+        </div>
+
+        <!-- Rating -->
+        <div class="input-container">
+          <h3>Rating</h3>
+          <div class="input-layout">
+            <i class="material-icons">star</i>
+            <input type="number" id="updateHotelRating" class="auth-form__input client" min="1" max="5" step="0.1" placeholder="Hotel rating (1–5)">
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="input-container">
+          <h3>Phone</h3>
+          <div class="input-layout">
+            <i class="material-icons">phone</i>
+            <input type="text" id="updateHotelPhone" class="auth-form__input client" placeholder="Enter phone number">
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="input-container">
+          <h3>Email</h3>
+          <div class="input-layout">
+            <i class="material-icons">email</i>
+            <input type="text" id="updateHotelEmail" class="auth-form__input client" placeholder="Enter email">
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="input-container">
+          <h3>Address</h3>
+          <div class="input-layout">
+            <i class="material-icons">location_city</i>
+            <input type="text" id="updateHotelAddress" class="auth-form__input client" placeholder="Enter address">
+          </div>
+        </div>
+
+        <button class="auth__button add-client" id="confirmUpdateHotelBtn">
+          Update Hotel
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

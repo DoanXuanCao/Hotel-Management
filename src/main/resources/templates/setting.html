@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link rel="stylesheet" href="./assets/main.css">
+    <link rel="stylesheet" href="./assets/base.css">
+    <link rel="stylesheet" href="./assets/room.css">
+    <link rel="stylesheet" href="./assets/setting.css">
+    <link rel="stylesheet" href="./assets/icon/themify-icons/themify-icons.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <title>App</title>
+</head>
+<body>
+    <div class="main">
+        <div class="header">
+        </div>
+        <div class="container grid__row">
+            <div class="nav-section__container grid__row">
+                <div class="nav-section__name">Ho<span class="half-end">MS</span></div>
+                <div class="nav-section">
+                    <div class="nav__links grid__row">
+                        <li class="nav__links-item"><a href="/homepage"><i class="ti-menu nav__icon"></i>Dashboard</a></li>
+                        <li class="nav__links-item"><a href="/client"><i class="ti-user nav__icon"></i>Guest</a></li>
+                        <li class="nav__links-item"><a href="/hotels"><i class="ti-home nav__icon"></i>Hotels</a></li>
+                        <li class="nav__links-item"><a href="/reservation"><i class="ti-calendar nav__icon"></i>Reservation</a></li>
+                        <li class="nav__links-item active"><a href="#"><i class="ti-settings nav__icon"></i>Setting</a></li>
+                    </div>
+                    <div class="nav__links-item logout"><a href="/"><i class="ti-back-left nav__icon"></i>Log out</a></div>
+                </div>
+            </div>
+            <div class="middle__section grid__row">
+                <div class="section-header grid__row">
+                    <h1 class="dashboard__header">Setting</h1>
+                </div>
+                <div class="add-client new-employee">
+                    <button class="add-client__button openModal" data-target="#thisModal">Add new employee
+                        <i class="material-icons">add_2</i>
+                    </button>
+                </div>
+                <div class="booking__status">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Hotel</th>
+                                <th>Position</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>SALARY</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+        </div>
+    </div>
+    <!-- Modal add client -->
+        <div class="modal assignModal" id="thisModal">
+            <div class="modal__overlay"></div>
+            <div class="modal__body">
+                <div class="modal__inner grid__row">
+                    <div class="auth-form--image register"><img src="./assets/img/DSC_2755-HDR.jpg" alt=""></div>
+                    <div class="auth-form register-form">
+                        <div class="auth-form__header grid__row">
+                            <h3 class="auth-form__icon">HoMS</h3>
+                            <a href="#" class="auth-form__return-button closeModal"><i class="ti-arrow-left"></i>Go back</a>
+                        </div>
+                        <div class="auth-form__form register">
+                            <div class="add-client__header">
+                                <div class="header-text">
+                                    <h1>Create new employee</h1>
+                                </div>
+                            </div>
+                            <div class="auth-form__group-container register grid__row">
+                                <div class="auth-form__group doubled grid__row">
+                                    <div class="auth-form__input-container">
+                                        <input type="text" class="auth-form__input" name="fname" placeholder="Enter first name">
+                                    </div>
+                                    <div class="input-container select-menu">
+                                        <input type="text" class="auth-form__input" name="lname" placeholder="Enter last name">
+                                    </div>
+                                </div>
+                                <div class="auth-form__group">
+                                    <input type="text" class="auth-form__input" name="username" placeholder="Enter username">
+                                </div>
+                                <div class="auth-form__group">
+                                    <input type="text" class="auth-form__input" name="email" placeholder="Enter email">
+                                </div>
+                                <div class="auth-form__group">
+                                    <input type="text" class="auth-form__input" name="password" placeholder="Enter password">
+                                </div>
+                                <div class="auth-form__group">
+                                    <input type="text" class="auth-form__input" placeholder="Re-enter password">
+                                </div>
+                                <div class="input-container select-menu" id="hotel-dropdown">
+                                    <div class="input-layout select-menu">
+                                        <span class="text">Select Hotel</span>
+                                        <i class="material-icons">arrow_drop_down</i>
+                                    </div>
+                                    <ul class="options">
+                                        <li class="option" data-value="hotel1">Hotel 1</li>
+                                        <li class="option" data-value="hotel2">Hotel 2</li>
+                                        <li class="option" data-value="hotel3">Hotel 3</li>
+                                    </ul>
+                                </div>
+                                <button class="auth__button register">Confirm</button>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal assignModal" id="editEmployeeModal">
+        <div class="modal__overlay"></div>
+        <div class="modal__body">
+            <div class="modal__inner grid__row">
+                <div class="auth-form--image register"><img src="./assets/img/DSC_2755-HDR.jpg" alt=""></div>
+                <div class="auth-form update-form">
+                    <div class="auth-form__header grid__row">
+                        <h3 class="auth-form__icon">HoMS</h3>
+                        <a href="#" class="auth-form__return-button closeModal"><i class="ti-arrow-left"></i>Go back</a>
+                    </div>
+                    <div class="auth-form__form register">
+                        <div class="add-client__header">
+                            <div class="header-text">
+                                <h1>Update Employee Details</h1>
+                            </div>
+                        </div>
+                        <div class="auth-form__group-container register grid__row">
+                            <input type="hidden" name="employeeId" id="editEmployeeId">
+                            <input type="hidden" name="accountId" id="editAccountId"> 
+                            
+                            <div class="auth-form__group doubled grid__row">
+                                <div class="auth-form__input-container">
+                                    <input type="text" class="auth-form__input" name="editFname" id="editFname" placeholder="Enter first name" required>
+                                </div>
+                                <div class="auth-form__input-container">
+                                    <input type="text" class="auth-form__input" name="editLname" id="editLname" placeholder="Enter last name" required>
+                                </div>
+                            </div>
+
+                            <div class="auth-form__group">
+                                <div class="input-container select-menu" id="edit-hotel-dropdown">
+                                    <div class="input-layout select-menu">
+                                        <span class="text" id="editHotelText">Select Hotel</span>
+                                        <i class="material-icons">arrow_drop_down</i>
+                                    </div>
+                                    <ul class="options" id="editHotelOptions"></ul>
+                                </div>
+                            </div>
+                            
+                            <div class="auth-form__group">
+                                <input type="text" class="auth-form__input" name="editPosition" id="editPosition" placeholder="Enter Position" required>
+                            </div>
+                            <div class="auth-form__group doubled grid__row">
+                                <div class="auth-form__input-container">
+                                    <label for="editPhone" class="input-label-date">Phone Number</label>
+                                    <input type="tel" class="auth-form__input" name="editPhone" id="editPhone" placeholder="Enter Phone Number">
+                                </div>
+                                <div class="auth-form__input-container">
+                                    <label for="editHireDate" class="input-label-date">Hire Date</label>
+                                    <input type="date" class="auth-form__input" name="editHireDate" id="editHireDate">
+                                </div>
+                            </div>
+                            <div class="auth-form__group">
+                                <input type="number" class="auth-form__input" name="editSalary" id="editSalary" placeholder="Enter Salary (VND)">
+                            </div>
+                            
+                            <div class="horizontal-divider"></div>
+                            
+                            <div class="auth-form__group">
+                                <input type="text" class="auth-form__input" name="editUsername" id="editUsername" placeholder="Enter username" required>
+                            </div>
+                            <div class="auth-form__group">
+                                <input type="email" class="auth-form__input" name="editEmail" id="editEmail" placeholder="Enter email" required>
+                            </div>
+                            <div class="auth-form__group doubled grid__row">
+                                <div class="auth-form__input-container">
+                                    <label for="editDob" class="input-label-date">Date of Birth</label>
+                                    <input type="date" class="auth-form__input" name="editDob" id="editDob">
+                                </div>
+                                <div class="auth-form__input-container">
+                                    <label for="editIdNumber" class="input-label-date">ID Number</label>
+                                    <input type="text" class="auth-form__input" name="editIdNumber" id="editIdNumber" placeholder="Enter ID Number (Optional)">
+                                </div>
+                            </div>
+                            
+                            <div class="auth-form__group">
+                                <input type="password" class="auth-form__input" name="editPassword" id="editPassword" placeholder="Enter new password (optional)">
+                            </div>
+
+                            <button class="auth__button update" id="updateEmployeeBtn">Confirm Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal add client -->
+    <script src="script.js"></script>
+</body>
+</html>

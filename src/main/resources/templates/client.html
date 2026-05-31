@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <link rel="stylesheet" href="./assets/main.css">
+  <link rel="stylesheet" href="./assets/base.css">
+  <link rel="stylesheet" href="./assets/icon/themify-icons/themify-icons.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <title>App</title>
+</head>
+<body>
+  <div class="main">
+
+    <div class="header">
+    </div>
+
+    <div class="container grid__row">
+
+      <div class="nav-section__container grid__row">
+        <div class="nav-section__name">Ho<span class="half-end">MS</span></div>
+        <div class="nav-section">
+          <div class="nav__links grid__row">
+            <li class="nav__links-item"><a href="/homepage"><i class="ti-menu nav__icon"></i>Dashboard</a></li>
+            <li class="nav__links-item active"><a href="#"><i class="ti-user nav__icon"></i>Guest</a></li>
+            <li class="nav__links-item"><a href="/hotels"><i class="ti-home nav__icon"></i>Hotels</a></li>
+            <li class="nav__links-item"><a href="/reservation"><i class="ti-calendar nav__icon"></i>Reservation</a></li>
+            <li class="nav__links-item"><a href="/setting"><i class="ti-settings nav__icon"></i>Setting</a></li>
+          </div>
+          <div class="nav__links-item logout"><a href="/"><i class="ti-back-left nav__icon"></i>Log out</a></div>
+        </div>
+      </div>
+
+      <div class="middle__section grid__row">
+
+        <div class="section-header grid__row">
+          <h1 class="dashboard__header">Guest</h1>
+          <div class="add-client">
+            <button class="add-client__button openModal" data-target="#addGuestModal">New Guest
+              <i class="material-icons">add_2</i>
+            </button>
+          </div>
+        </div>
+        <div class="booking__status">
+          <div class="search-bar__container grid__row">
+            <form>
+              <div class="search-bar__section">
+                <i class="material-icons">search</i>
+                <input class="search-bar__input" type="search" placeholder="Search">
+              </div>
+            </form>
+          </div>
+
+          <table class="client__table">
+            <thead>
+              <tr>
+                <th>NAME</th>
+                <th>BIRTHDAY</th>
+                <th>EMAIL</th>
+                <th>PHONE</th>
+                <th>ADDRESS</th>
+                <th>ID NUMBER</th>
+                <th>ORIGIN</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="guestTableBody">
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+    </div>
+
+  </div>
+  <!-- Modal add guest -->
+  <div class="modal" id="addGuestModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__body add-client">
+      <div class="add-client__form">
+
+        <div class="add-client__header">
+          <div class="header-text">
+            <h1>Add Guest</h1>
+          </div>
+          <div class="close-button closeModal">
+            <i class="material-icons">close</i>
+          </div>
+        </div>
+
+        <div class="sub-header-text">
+          <h3>Fill In The Form Below</h3>
+        </div>
+
+        <div class="contact-input">
+          <!-- First Name -->
+          <div class="input-container">
+            <h3>First Name</h3>
+            <div class="input-layout">
+              <i class="material-icons">person</i>
+              <input type="text" id="guestFirstName" class="auth-form__input client" placeholder="Enter first name">
+            </div>
+          </div>
+
+          <!-- Last Name -->
+          <div class="input-container">
+            <h3>Last Name</h3>
+            <div class="input-layout">
+              <i class="material-icons">person</i>
+              <input type="text" id="guestLastName" class="auth-form__input client" placeholder="Enter last name">
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="input-container">
+          <h3>Phone Number</h3>
+          <div class="input-layout">
+            <i class="material-icons">phone</i>
+            <input type="text" id="guestPhone" class="auth-form__input client" placeholder="Enter phone number">
+          </div>
+        </div>
+
+        <!-- Email (account) -->
+        <div class="input-container">
+          <h3>Email</h3>
+          <div class="input-layout">
+            <i class="material-icons">email</i>
+            <input type="email" id="guestEmail" class="auth-form__input client" placeholder="Enter email">
+          </div>
+      </div>
+
+      <!-- Username -->
+      <div class="input-container">
+        <h3>Username</h3>
+        <div class="input-layout">
+          <i class="material-icons">account_circle</i>
+          <input type="text" id="guestUsername" class="auth-form__input client" placeholder="Enter username">
+        </div>
+      </div>
+
+        <!-- Password -->
+      <div class="input-container">
+        <h3>Password</h3>
+        <div class="input-layout">
+          <i class="material-icons">lock</i>
+          <input type="password" id="guestPassword" class="auth-form__input client" placeholder="Enter password">
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="input-container">
+        <h3>Address</h3>
+        <div class="input-layout">
+          <i class="material-icons">home</i>
+          <input type="text" id="guestAddress" class="auth-form__input client" placeholder="Enter address">
+        </div>
+      </div>
+
+      <!-- Origin -->
+      <div class="input-container">
+        <h3>Origin</h3>
+        <div class="input-layout">
+          <i class="material-icons">flag</i>
+          <input type="text" id="guestOrigin" class="auth-form__input client" placeholder="Enter origin">
+        </div>
+      </div>
+
+      <!-- Date of Birth -->
+      <div class="input-container">
+        <h3>Date of Birth</h3>
+        <div class="input-layout">
+          <i class="material-icons">calendar_month</i>
+          <input type="date" id="dob" class="auth-form__input client">
+        </div>
+      </div>
+
+        <!-- ID Number -->
+        <div class="input-container">
+          <h3>ID Number</h3>
+          <div class="input-layout">
+            <i class="material-icons">badge</i>
+            <input type="text" id="idNumber" class="auth-form__input client" placeholder="Enter ID number">
+          </div>
+        </div>
+
+        <button class="auth__button add-client" id="confirmAddGuestBtn">
+          Confirm
+        </button>
+      </div>
+    </div>
+  </div>    
+  <!-- Modal update client -->
+  <div class="modal" id="updateGuestModal">
+    <div class="modal__overlay"></div>
+    <div class="modal__body add-client">
+      <div class="add-client__form">
+
+        <!-- Header -->
+        <div class="add-client__header">
+            <div class="header-text">
+                <h1>Update Guest</h1>
+            </div>
+            <div class="close-button closeModal">
+                <i class="material-icons">close</i>
+            </div>
+        </div>
+
+        <div class="sub-header-text">
+            <h3>Edit the information below</h3>
+        </div>
+
+        <!-- Hidden ID fields -->
+        <input type="hidden" id="updateGuestId">
+        <input type="hidden" id="updateAccountId">
+
+        <!-- Name -->
+        <div class="contact-input">
+          <div class="input-container">
+              <h3>First Name</h3>
+              <div class="input-layout">
+                  <i class="material-icons">person</i>
+                  <input type="text" id="updateFirstName" class="auth-form__input client" placeholder="Enter first name">
+              </div>
+          </div>
+
+          <div class="input-container">
+              <h3>Last Name</h3>
+              <div class="input-layout">
+                  <i class="material-icons">person</i>
+                  <input type="text" id="updateLastName" class="auth-form__input client" placeholder="Enter last name">
+              </div>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="input-container">
+          <h3>Phone</h3>
+          <div class="input-layout">
+            <i class="material-icons">phone</i>
+            <input type="text" id="updatePhone" class="auth-form__input client" placeholder="Enter phone number">
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="input-container">
+          <h3>Email</h3>
+          <div class="input-layout">
+            <i class="material-icons">email</i>
+            <input type="text" id="updateEmail" class="auth-form__input client" placeholder="Enter email">
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="input-container">
+          <h3>Address</h3>
+          <div class="input-layout">
+            <i class="material-icons">home</i>
+            <input type="text" id="updateAddress" class="auth-form__input client" placeholder="Enter address">
+          </div>
+        </div>
+
+        <!-- Origin -->
+        <div class="input-container">
+          <h3>Origin</h3>
+          <div class="input-layout">
+            <i class="material-icons">location_on</i>
+            <input type="text" id="updateOrigin" class="auth-form__input client" placeholder="Enter origin">
+          </div>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="input-container">
+          <h3>Date of Birth</h3>
+          <div class="input-layout">
+            <i class="material-icons">calendar_month</i>
+            <input type="date" id="updateDob" class="auth-form__input client">
+          </div>
+        </div>
+
+        <!-- ID Number -->
+        <div class="input-container">
+          <h3>ID Number</h3>
+          <div class="input-layout">
+            <i class="material-icons">badge</i>
+            <input type="text" id="updateIdNumber" class="auth-form__input client" placeholder="Enter ID number">
+          </div>
+        </div>
+
+        <!-- Confirm -->
+        <button class="auth__button add-client" id="confirmUpdateGuestBtn">
+          Update Guest
+        </button>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
