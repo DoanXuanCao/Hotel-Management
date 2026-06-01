@@ -68,19 +68,13 @@ async function loadHotelsForGuest() {
 let _bookingSelectedRoomId = null;
 
 function initGuestModalEvents() {
-  const modal     = document.getElementById('bookingModal');
-  const overlay   = modal?.querySelector('.modal__overlay');
-  const closeBtn  = modal?.querySelector('.closeModal');
-  const toggle    = document.getElementById('bookingRoomToggle');
+  const modal      = document.getElementById('bookingModal');
+  const overlay    = modal?.querySelector('.modal__overlay');
+  const closeBtn   = modal?.querySelector('.closeModal');
   const confirmBtn = document.getElementById('confirmBookingBtn');
 
   overlay?.addEventListener('click', () => modal.classList.remove('active'));
   closeBtn?.addEventListener('click', () => modal.classList.remove('active'));
-
-  toggle?.addEventListener('click', (e) => {
-    if (e.target.closest('#bookingRoomOptions')) return;
-    document.getElementById('roomSelectMenu')?.classList.toggle('active');
-  });
 
   confirmBtn?.addEventListener('click', submitBooking);
 }

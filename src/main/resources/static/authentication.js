@@ -78,8 +78,16 @@ registerForm.addEventListener("submit", async (e) => {
             return;
         }
 
-        alert("Registration successful!");
-        container.classList.remove("active");
+        const data = await res.json();
+        if (data.guestId) {
+            localStorage.setItem("guestId", data.guestId);
+        }
+        if (data.token) {
+            localStorage.setItem("token", data.token);
+        }
+
+        alert("Registration successful! You are now logged in.");
+        window.location.href = "/guest";
 
     } catch (err) {
         console.error(err);

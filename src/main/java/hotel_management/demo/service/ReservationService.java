@@ -47,7 +47,20 @@ public class ReservationService {
     reservation.setCheckout(req.getCheckout());
     reservation.setStatus(req.getStatus());
 
-    Guest guest = guestService.getGuestById(req.getGuest().getId());
+    UUID guestId = req.getGuest() == null ? null : req.getGuest().getId();
+    if (guestId == null) {
+      throw new RuntimeException("Guest ID is required");
+    }
+
+    Guest guest;
+    try {
+      guest = guestService.getGuestById(guestId);
+    } catch (EntityNotFoundException e) {
+      guest = guestService.getGuestByAccountId(guestId);
+      if (guest == null) {
+        throw new EntityNotFoundException("Guest not found with ID or account ID: " + guestId);
+      }
+    }
     reservation.setGuest(guest);
 
     if (req.getEmployee() != null) {

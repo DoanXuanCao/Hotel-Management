@@ -19,4 +19,5 @@ public class RoomDTO {
   private String hotelName;
   private UUID roomTypeId;
   private String roomTypeName;
+  private Integer basePrice;
 }
