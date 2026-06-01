@@ -1077,7 +1077,10 @@ async function initAddReservationModal() {
   guests.forEach(g => {
     const li = document.createElement('li');
     li.className = 'option';
-    li.textContent = `${g.firstName} ${g.lastName}`;
+    const hasName = g.firstName || g.lastName;
+    li.textContent = hasName
+      ? `${g.firstName || ''} ${g.lastName || ''}`.trim()
+      : (g.account?.username || 'Unknown');
 
     li.onclick = e => {
       e.stopPropagation();
@@ -1096,6 +1099,11 @@ async function initAddReservationModal() {
   const hotelsRes = await fetch('/api/hotels');
   const hotels = await hotelsRes.json();
 
+  const roomSelectContainer = modal.querySelector('#addRoomSelect');
+  roomSelectContainer.style.opacity = '0.5';
+  roomSelectContainer.style.pointerEvents = 'none';
+  roomText.textContent = 'Select hotel first';
+
   hotels.forEach(h => {
     const li = document.createElement('li');
     li.className = 'option';
@@ -1109,7 +1117,6 @@ async function initAddReservationModal() {
       hotelText.style.color = '#333';
       hotelOptions.parentElement.classList.remove('active');
 
-      // load rooms by hotel
       await loadRoomsByHotel(h.id);
     };
 
@@ -1122,16 +1129,29 @@ async function initAddReservationModal() {
     roomText.textContent = 'Select Room';
     roomText.style.color = '#999';
     selectedRoomId = null;
-  
+
+    roomSelectContainer.style.opacity = '1';
+    roomSelectContainer.style.pointerEvents = 'auto';
+
     const res = await fetch(`/api/rooms/hotels/${hotelId}`);
     const rooms = await res.json();
-  
-    rooms.forEach(r => {
-      if (r.status == "AVAILABLE") {
+    const availableRooms = rooms.filter(r => r.status === 'AVAILABLE');
+
+    if (availableRooms.length === 0) {
+      const li = document.createElement('li');
+      li.className = 'option';
+      li.textContent = 'No available rooms';
+      li.style.color = '#999';
+      li.style.pointerEvents = 'none';
+      roomOptions.appendChild(li);
+      return;
+    }
+
+    availableRooms.forEach(r => {
       const li = document.createElement('li');
       li.className = 'option';
       li.textContent = `Room ${r.roomNumber}`;
-  
+
       li.onclick = e => {
         e.stopPropagation();
         selectedRoomId = r.id;
@@ -1139,10 +1159,10 @@ async function initAddReservationModal() {
         roomText.style.color = '#333';
         roomOptions.parentElement.classList.remove('active');
       };
-  
+
       roomOptions.appendChild(li);
-    }});
-  }  
+    });
+  }
 
   modal.querySelectorAll('#addStatusOptions .option').forEach(opt => {
     opt.onclick = e => {

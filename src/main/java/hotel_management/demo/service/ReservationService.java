@@ -63,7 +63,7 @@ public class ReservationService {
     }
     reservation.setGuest(guest);
 
-    if (req.getEmployee() != null) {
+    if (req.getEmployee() != null && req.getEmployee().getId() != null) {
       Employee employee = employeeService.getEmployeeById(
           req.getEmployee().getId());
       reservation.setEmployee(employee);

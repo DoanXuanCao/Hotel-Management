@@ -78,7 +78,8 @@ public class ReservationController {
   public ResponseEntity<ReservationDTO> approveReservation(
       @PathVariable UUID id,
       @RequestBody Map<String, String> body) {
-    UUID employeeId = body.containsKey("employeeId") ? UUID.fromString(body.get("employeeId")) : null;
+    String empIdStr = body.get("employeeId");
+    UUID employeeId = (empIdStr != null && !empIdStr.isBlank()) ? UUID.fromString(empIdStr) : null;
     return ResponseEntity.ok(reservationMapper.toDTO(reservationService.approveReservation(id, employeeId)));
   }
 
