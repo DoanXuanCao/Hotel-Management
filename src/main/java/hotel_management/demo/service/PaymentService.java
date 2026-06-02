@@ -6,12 +6,13 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import hotel_management.demo.constant.ReservationStatus;
 import hotel_management.demo.dto.PaymentDTO;
 import hotel_management.demo.dto.ReservationDTO;
 import hotel_management.demo.repository.PaymentRepository;
-import hotel_management.demo.service.mapper.ReservationMapper;
-
 import hotel_management.demo.schema.Payment;
+import hotel_management.demo.schema.Reservation;
+import hotel_management.demo.service.mapper.ReservationMapper;
 
 @Service
 public class PaymentService {
@@ -60,11 +61,28 @@ public class PaymentService {
   public Payment updatePayment(UUID id, Payment details) {
     Payment existing = getPaymentById(id);
 
+    boolean wasUnpaid = existing.getPaymentDate() == null;
+    boolean nowPaid   = details.getPaymentDate() != null;
+
     existing.setAmount(details.getAmount());
     existing.setPaymentDate(details.getPaymentDate());
     existing.setMethod(details.getMethod());
 
-    return paymentRepository.save(existing);
+    Payment saved = paymentRepository.save(existing);
+
+    // Khi nhân viên xác nhận thanh toán (set paymentDate) và phòng đang CHECKED_IN
+    // → tự động chuyển reservation sang COMPLETED + room → AVAILABLE
+    if (wasUnpaid && nowPaid && saved.getReservation() != null) {
+      try {
+        Reservation reservation = reservationService.getReservationById(
+            saved.getReservation().getId());
+        if (reservation.getStatus() == ReservationStatus.CHECKED_IN) {
+          reservationService.completeReservation(reservation.getId());
+        }
+      } catch (Exception ignored) {}
+    }
+
+    return saved;
   }
 
   public void deletePayment(UUID id) {

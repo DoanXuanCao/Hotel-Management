@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.*;
 
@@ -33,6 +34,7 @@ public class Payment {
   @Column(nullable = false, precision = 10, scale = 2)
   private Integer amount;
 
+  @JsonProperty("payment_date")
   @Column(name = "payment_date", nullable = true)
   private LocalDateTime paymentDate;
 

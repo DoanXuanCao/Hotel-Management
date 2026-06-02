@@ -71,8 +71,8 @@ registerForm.addEventListener("submit", async (e) => {
         });
 
         if (!res.ok) {
-            const message = await res.text();
-            alert(message || "Registration error");
+            const errData = await res.json().catch(() => null);
+            alert(errData?.message || "Registration failed. Username or email may already exist.");
             return;
         }
 

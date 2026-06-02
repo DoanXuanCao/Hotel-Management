@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import hotel_management.demo.dto.LoginRequest;
 import hotel_management.demo.dto.RegisterGuestRequest;
 import hotel_management.demo.dto.AuthResponse;
@@ -38,6 +39,10 @@ public class AuthenticationController {
     try {
       AuthResponse response = guestService.registerGuest(request);
       return ResponseEntity.ok(response);
+    } catch (DataIntegrityViolationException e) {
+      AuthResponse error = new AuthResponse();
+      error.setMessage("Username or email already exists.");
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     } catch (RuntimeException e) {
       AuthResponse error = new AuthResponse();
       error.setMessage(e.getMessage());
