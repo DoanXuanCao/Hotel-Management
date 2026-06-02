@@ -48,7 +48,13 @@ public class PageController {
 
   @GetMapping("/setting")
   public String setting(Model model) {
-    model.addAttribute("title", "Setting Page");
+    model.addAttribute("title", "Employee Management");
+    return "setting";
+  }
+
+  @GetMapping("/employee")
+  public String employee(Model model) {
+    model.addAttribute("title", "Employee Management");
     return "setting";
   }
 

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import hotel_management.demo.dto.EmployeeDTO;
 import hotel_management.demo.schema.Employee;
 import hotel_management.demo.service.EmployeeService;
@@ -28,10 +29,17 @@ public class EmployeeController {
   }
 
   @PostMapping
-  public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody Employee employee) {
-    Employee createdEmployee = employeeService.createEmployee(employee);
-    EmployeeDTO employeeDTO = employeeMapper.toDTO(createdEmployee);
-    return new ResponseEntity<>(employeeDTO, HttpStatus.CREATED);
+  public ResponseEntity<?> createEmployee(@RequestBody Employee employee) {
+    try {
+      Employee createdEmployee = employeeService.createEmployee(employee);
+      return new ResponseEntity<>(employeeMapper.toDTO(createdEmployee), HttpStatus.CREATED);
+    } catch (DataIntegrityViolationException e) {
+      return ResponseEntity.badRequest()
+          .body(java.util.Map.of("message", "Username or email already exists."));
+    } catch (RuntimeException e) {
+      return ResponseEntity.badRequest()
+          .body(java.util.Map.of("message", e.getMessage()));
+    }
   }
 
   @GetMapping("/")

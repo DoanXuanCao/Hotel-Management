@@ -1,7 +1,47 @@
-let selectedEditHotelId = null; 
+let selectedEditHotelId = null;
 let selectedRoomTypeId = null;
 
+function applyRoleBasedAccess() {
+  const role = localStorage.getItem('role');
+  const path = window.location.pathname;
+
+  // Guard: Employee không vào được trang Admin Only
+  if (role !== 'ADMIN' && (path === '/employee' || path === '/setting')) {
+    window.location.replace('/');
+    return;
+  }
+
+  if (role !== 'ADMIN') {
+    // Ẩn nav links dành cho Admin
+    ['/employee', '/setting'].forEach(href => {
+      document.querySelectorAll(`.nav__links-item a[href="${href}"]`).forEach(a => {
+        const li = a.closest('.nav__links-item');
+        if (li) li.remove();
+      });
+    });
+
+    // UC24: Ẩn "Add room types" button và toàn bộ Room Types section
+    document.querySelectorAll('[data-target="#addRoomTypeModal"]').forEach(btn => {
+      const container = btn.closest('.manage-room-types') || btn.closest('.section-header');
+      if (container) container.style.display = 'none';
+    });
+    const roomTypeTable = document.querySelector('.room-type__table');
+    if (roomTypeTable) roomTypeTable.style.display = 'none';
+    document.querySelectorAll('.section-header').forEach(header => {
+      if (header.querySelector('h1')?.textContent.trim() === 'Room Types & Prices') {
+        header.style.display = 'none';
+      }
+    });
+
+    // UC21 giới hạn: Employee không tạo mới Hotel (chỉ Admin mới thêm hotel)
+    document.querySelectorAll('[data-target="#addHotelModal"]').forEach(btn => {
+      btn.style.display = 'none';
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  applyRoleBasedAccess();
   document.querySelectorAll('a[href="/"]').forEach(a => {
     if (a.closest('.logout')) {
       a.addEventListener('click', () => localStorage.clear());
@@ -79,8 +119,8 @@ function initGlobalUI() {
 
     options.forEach((option) => {
       option.addEventListener("click", () => {
-        let selectedOption = option.querySelector(".option-text").innerText;
-        if(menuText) menuText.innerText = selectedOption;
+        const textEl = option.querySelector(".option-text");
+        if (textEl && menuText) menuText.innerText = textEl.innerText;
       });
     });
   });
@@ -158,7 +198,9 @@ async function loadAmount() {
     const data = await res.json();
     const el = document.querySelector('.dashboard__list .dashboard__item:nth-child(3) h1');
     if (el) {
-      const total = data.reduce((sum, payment) => sum + payment.amount, 0);
+      const total = data
+        .filter(payment => payment.payment_date !== null && payment.payment_date !== undefined)
+        .reduce((sum, payment) => sum + payment.amount, 0);
       el.textContent = total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
     }
   } catch (err) {
@@ -340,7 +382,8 @@ async function loadEmployees() {
       tableBody.appendChild(row);
   });
   
-  initEmployeeTableActions(); 
+  initEmployeeTableActions();
+  loadOrphanedAccounts();
 
   } catch (err) {
     console.error('Failed to load employees:', err);
@@ -348,6 +391,53 @@ async function loadEmployees() {
     if (tableContainer) {
         tableContainer.innerHTML = '<p class="error-message">Failed to load employee data. Please check the server.</p>';
     }
+  }
+}
+
+async function loadOrphanedAccounts() {
+  const section = document.querySelector('#orphanedSection');
+  const tbody = document.querySelector('#orphanedTableBody');
+  if (!section || !tbody) return;
+
+  try {
+    const res = await fetch('/api/accounts/orphaned');
+    if (!res.ok) return;
+    const accounts = await res.json();
+
+    if (accounts.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+    tbody.innerHTML = '';
+    accounts.forEach(acc => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td style="color:#c62828; font-weight:600;">${acc.username}</td>
+        <td>${acc.email}</td>
+        <td>${acc.createdAt ? new Date(acc.createdAt).toLocaleDateString('vi-VN') : 'N/A'}</td>
+        <td>
+          <button class="action-btn delete-btn" data-account-id="${acc.id}"
+            style="background:#ffebee; color:#c62828; border:none; border-radius:6px; padding:4px 12px; cursor:pointer;">
+            Xóa
+          </button>
+        </td>
+      `;
+      row.querySelector('.delete-btn').addEventListener('click', async () => {
+        if (!confirm(`Delete broken account "${acc.username}"?`)) return;
+        const del = await fetch(`/api/accounts/${acc.id}`, { method: 'DELETE' });
+        if (del.ok) {
+          alert(`Account "${acc.username}" deleted. Recreate it properly via "Add new employee".`);
+          loadOrphanedAccounts();
+        } else {
+          alert('Delete failed. Please try again.');
+        }
+      });
+      tbody.appendChild(row);
+    });
+  } catch (err) {
+    console.error('Failed to load orphaned accounts:', err);
   }
 }
 
@@ -1215,10 +1305,9 @@ async function initAddReservationModal() {
 
       if (!res.ok) throw new Error('Create reservation failed');
 
-      alert('Reservation created successfully!');
       modal.classList.remove('active');
-
       loadRecentReservations();
+      loadNoReservation();
     } catch (err) {
       console.error(err);
       alert(err.message);
@@ -1289,7 +1378,7 @@ async function initAddReservationModal() {
         reservation: { id: selectedReservationId },
         method: selectedMethod,
         amount: Number(amountInput.value),
-        payment_date: dateInput.value ? dateInput.value : ""
+        payment_date: dateInput.value ? dateInput.value + ':00' : null
       };
   
       try {

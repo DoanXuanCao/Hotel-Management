@@ -66,6 +66,27 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Orphaned accounts section -->
+                <div id="orphanedSection" style="margin-top:32px; display:none;">
+                    <h2 class="dashboard__header" style="font-size:18px; color:#c62828; margin-bottom:12px;">
+                        ⚠️ Tài khoản lỗi (không có Employee record)
+                    </h2>
+                    <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                        Các tài khoản bên dưới có role EMPLOYEE nhưng không được liên kết với nhân viên nào. Hãy xóa và tạo lại đúng cách qua "Add new employee".
+                    </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orphanedTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="footer">

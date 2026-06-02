@@ -133,10 +133,10 @@ public class AccountService {
   // Authentication
   public AuthResponse login(LoginRequest request) {
     Account acc = accountRepository.findByUsername(request.getUsername())
-        .orElseThrow(() -> new RuntimeException("Invalid username"));
+        .orElseThrow(() -> new RuntimeException("Incorrect username or password"));
 
     if (!passwordEncoder.matches(request.getPassword(), acc.getPassword())) {
-      throw new RuntimeException("Invalid password");
+      throw new RuntimeException("Incorrect username or password");
     }
 
     AuthResponse response = new AuthResponse();
@@ -147,7 +147,9 @@ public class AccountService {
     if (acc.getRole() == Role.EMPLOYEE) {
       Employee employee = employeeRepository.findByAccountId(acc.getId());
       if (employee == null) {
-        throw new RuntimeException("Employee account not linked");
+        throw new RuntimeException(
+            "Account '" + acc.getUsername() + "' is misconfigured: no Employee record linked. " +
+            "Please ask an admin to delete this account and recreate it via the Setting page.");
       }
       response.setEmployeeId(employee.getId());
     }
@@ -155,7 +157,7 @@ public class AccountService {
     if (acc.getRole() == Role.GUEST) {
       Guest guest = guestRepository.findByAccountId(acc.getId());
       if (guest == null) {
-        throw new RuntimeException("Guest account not linked");
+        throw new RuntimeException("Account '" + acc.getUsername() + "' is misconfigured: no Guest record linked.");
       }
       response.setGuestId(guest.getId());
     }

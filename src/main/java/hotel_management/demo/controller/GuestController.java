@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import hotel_management.demo.dto.GuestDTO;
 import hotel_management.demo.schema.Guest;
@@ -26,12 +27,16 @@ public class GuestController {
   }
 
   @PostMapping
-  public ResponseEntity<GuestDTO> createGuest(@RequestBody Guest guest) {
+  public ResponseEntity<?> createGuest(@RequestBody Guest guest) {
     try {
       Guest createdGuest = guestService.createGuest(guest);
       return new ResponseEntity<>(guestMapper.toDTO(createdGuest), HttpStatus.CREATED);
+    } catch (DataIntegrityViolationException e) {
+      return ResponseEntity.badRequest()
+          .body(java.util.Map.of("message", "Username or email already exists."));
     } catch (IllegalArgumentException e) {
-      return ResponseEntity.badRequest().build();
+      return ResponseEntity.badRequest()
+          .body(java.util.Map.of("message", e.getMessage()));
     }
   }
 

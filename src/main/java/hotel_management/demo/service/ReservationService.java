@@ -228,6 +228,17 @@ public class ReservationService {
   }
 
   @Transactional
+  public Reservation completeReservation(UUID id) {
+    Reservation reservation = reservationRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("Reservation not found with ID: " + id));
+    ReservationStatus old = reservation.getStatus();
+    reservation.setStatus(ReservationStatus.COMPLETED);
+    Reservation saved = reservationRepository.save(reservation);
+    applyRoomStatusForReservation(saved, ReservationStatus.COMPLETED, old);
+    return saved;
+  }
+
+  @Transactional
   public Reservation cancelReservation(UUID id) {
     Reservation reservation = reservationRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Reservation not found with ID: " + id));
