@@ -2,10 +2,15 @@ let selectedEditHotelId = null;
 let selectedRoomTypeId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('a[href="/"]').forEach(a => {
+    if (a.closest('.logout')) {
+      a.addEventListener('click', () => localStorage.clear());
+    }
+  });
   initGlobalUI();
   initDashboard();
   initRegisterEmployeeForm();
-  initUpdateEmployeeModal(); 
+  initUpdateEmployeeModal();
   initAllModals();
   initAddGuestModal();
   initAddRoomModal();
@@ -13,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initRoomTypeModal();
   initAddReservationModal();
   initTableActions();
+  initPendingTableActions();
 });
 
 function initGlobalUI() {
@@ -105,21 +111,21 @@ async function loadGuests() {
       el2.innerHTML = '';
       data.forEach(guest => {
         let dob = "";
-        if (guest.account?.dob) {
-          const d = new Date(guest.account.dob);
+        if (guest.dob) {
+          const d = new Date(guest.dob);
           dob = !isNaN(d.getTime()) ? d.toLocaleDateString("vi-VN") : "";
         }
 
         const row = document.createElement('tr');
 
         row.innerHTML = `
-          <td>${guest.firstName} ${guest.lastName}</td>
+          <td>${guest.firstName || ''} ${guest.lastName || ''}</td>
           <td>${dob}</td>
-          <td>${guest.account.email}</td>
-          <td>${guest.phone}</td>
-          <td>${guest.address}</td>
-          <td>${guest.account.idNumber}</td>
-          <td>${guest.origin}</td>
+          <td>${guest.email || ''}</td>
+          <td>${guest.phone || ''}</td>
+          <td>${guest.address || ''}</td>
+          <td>${guest.idNumber || ''}</td>
+          <td>${guest.origin || ''}</td>
           <td>
             <button class="action-btn edit-btn" data-id="${guest.id}"><i class="ti-pencil"></i></button>
             <button class="action-btn delete-btn" data-id="${guest.id}"><i class="ti-trash"></i></button>
@@ -627,16 +633,16 @@ async function openUpdateGuestModal(guestId) {
     modal.querySelector('#updateAccountId').value = guest.accountId || "";
     modal.querySelector('#updateFirstName').value = guest.firstName || "";
     modal.querySelector('#updateLastName').value = guest.lastName || "";
-    modal.querySelector('#updateEmail').value = guest.account.email || "";
+    modal.querySelector('#updateEmail').value = guest.email || "";
     modal.querySelector('#updatePhone').value = guest.phone || "";
     modal.querySelector('#updateAddress').value = guest.address || "";
     modal.querySelector('#updateOrigin').value = guest.origin || "";
-    modal.querySelector('#updateDob').value = guest.account.dob || "";
-    modal.querySelector('#updateIdNumber').value = guest.account.idNumber || "";
+    modal.querySelector('#updateDob').value = guest.dob ? new Date(guest.dob).toISOString().split('T')[0] : "";
+    modal.querySelector('#updateIdNumber').value = guest.idNumber || "";
 
     modal.classList.add('active');
 
-    document.querySelector("#confirmUpdateGuestBtn").addEventListener("click", async () => {
+    document.querySelector("#confirmUpdateGuestBtn").onclick = async () => {
       const id = document.querySelector('#updateGuestId').value;
 
       const rawDob = document.querySelector('#updateDob').value;
@@ -677,7 +683,7 @@ async function openUpdateGuestModal(guestId) {
         console.error(err);
         alert("Failed to update guest");
       }
-    });
+    };
   } catch (err) {
     console.error("Error loading guest:", err);
   }
@@ -747,7 +753,7 @@ async function openUpdateHotelModal(hotelId) {
 
     modal.classList.add('active');
 
-    document.querySelector("#confirmUpdateHotelBtn").addEventListener("click", async () => {
+    document.querySelector("#confirmUpdateHotelBtn").onclick = async () => {
       const updatedHotel = {
         id: modal.querySelector('#updateHotelId').value,
         name: modal.querySelector('#updateHotelName').value,
@@ -775,8 +781,7 @@ async function openUpdateHotelModal(hotelId) {
         console.error('Error updating hotel:', error);
         alert('Error updating hotel: ' + error.message);
       }
-    }
-    );
+    };
   } catch (error) {
     console.error('Error loading hotel data:', error);
     alert('Error loading hotel data: ' + error.message);
@@ -1077,7 +1082,10 @@ async function initAddReservationModal() {
   guests.forEach(g => {
     const li = document.createElement('li');
     li.className = 'option';
-    li.textContent = `${g.firstName} ${g.lastName}`;
+    const hasName = g.firstName || g.lastName;
+    li.textContent = hasName
+      ? `${g.firstName || ''} ${g.lastName || ''}`.trim()
+      : (g.account?.username || 'Unknown');
 
     li.onclick = e => {
       e.stopPropagation();
@@ -1096,6 +1104,11 @@ async function initAddReservationModal() {
   const hotelsRes = await fetch('/api/hotels');
   const hotels = await hotelsRes.json();
 
+  const roomSelectContainer = modal.querySelector('#addRoomSelect');
+  roomSelectContainer.style.opacity = '0.5';
+  roomSelectContainer.style.pointerEvents = 'none';
+  roomText.textContent = 'Select hotel first';
+
   hotels.forEach(h => {
     const li = document.createElement('li');
     li.className = 'option';
@@ -1109,7 +1122,6 @@ async function initAddReservationModal() {
       hotelText.style.color = '#333';
       hotelOptions.parentElement.classList.remove('active');
 
-      // load rooms by hotel
       await loadRoomsByHotel(h.id);
     };
 
@@ -1122,16 +1134,29 @@ async function initAddReservationModal() {
     roomText.textContent = 'Select Room';
     roomText.style.color = '#999';
     selectedRoomId = null;
-  
+
+    roomSelectContainer.style.opacity = '1';
+    roomSelectContainer.style.pointerEvents = 'auto';
+
     const res = await fetch(`/api/rooms/hotels/${hotelId}`);
     const rooms = await res.json();
-  
-    rooms.forEach(r => {
-      if (r.status == "AVAILABLE") {
+    const availableRooms = rooms.filter(r => r.status === 'AVAILABLE');
+
+    if (availableRooms.length === 0) {
+      const li = document.createElement('li');
+      li.className = 'option';
+      li.textContent = 'No available rooms';
+      li.style.color = '#999';
+      li.style.pointerEvents = 'none';
+      roomOptions.appendChild(li);
+      return;
+    }
+
+    availableRooms.forEach(r => {
       const li = document.createElement('li');
       li.className = 'option';
       li.textContent = `Room ${r.roomNumber}`;
-  
+
       li.onclick = e => {
         e.stopPropagation();
         selectedRoomId = r.id;
@@ -1139,10 +1164,10 @@ async function initAddReservationModal() {
         roomText.style.color = '#333';
         roomOptions.parentElement.classList.remove('active');
       };
-  
+
       roomOptions.appendChild(li);
-    }});
-  }  
+    });
+  }
 
   modal.querySelectorAll('#addStatusOptions .option').forEach(opt => {
     opt.onclick = e => {
@@ -1923,6 +1948,24 @@ function initTableActions() {
       }
     });
   }
+
+  // Dashboard recent reservations table cũng cần edit/delete
+  const recentTableBody = document.querySelector('#recentTableBody');
+  if (recentTableBody) {
+    recentTableBody.addEventListener('click', (e) => {
+      const target = e.target.closest('.action-btn');
+      if (!target) return;
+
+      const reservationId = target.getAttribute('data-id');
+
+      if (target.classList.contains('edit-btn')) {
+        openUpdateReservationModal(reservationId);
+      }
+      if (target.classList.contains('delete-btn')) {
+        deleteReservation(reservationId);
+      }
+    });
+  }
 }
   //employee
 async function updateEmployee(employeeId, updatedData) {
@@ -2180,6 +2223,44 @@ async function deletePayment(paymentId) {
   }
 }
 
+function initPendingTableActions() {
+  const tbody = document.querySelector('#pendingTableBody');
+  if (!tbody) return;
+
+  tbody.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.action-btn');
+    if (!btn) return;
+    const id = btn.getAttribute('data-id');
+
+    if (btn.classList.contains('approve-btn')) {
+      const employeeId = localStorage.getItem('employeeId');
+      const res = await fetch(`/api/reservations/${id}/approve`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ employeeId: employeeId || '' })
+      });
+      if (res.ok) {
+        alert('Reservation approved!');
+        loadPendingReservations();
+        loadRecentReservations();
+      } else {
+        alert('Failed to approve reservation.');
+      }
+    }
+
+    if (btn.classList.contains('reject-btn')) {
+      if (!confirm('Reject this reservation request?')) return;
+      const res = await fetch(`/api/reservations/${id}/reject`, { method: 'PUT' });
+      if (res.ok) {
+        alert('Reservation rejected.');
+        loadPendingReservations();
+      } else {
+        alert('Failed to reject reservation.');
+      }
+    }
+  });
+}
+
 async function loadPendingReservations() {
   const tbody = document.querySelector('#pendingTableBody');
   const countEl = document.querySelector('#pendingCount');
@@ -2224,39 +2305,6 @@ async function loadPendingReservations() {
       `;
       tbody.appendChild(row);
     });
-
-    tbody.addEventListener('click', async (e) => {
-      const btn = e.target.closest('.action-btn');
-      if (!btn) return;
-      const id = btn.getAttribute('data-id');
-
-      if (btn.classList.contains('approve-btn')) {
-        const employeeId = localStorage.getItem('employeeId');
-        const res = await fetch(`/api/reservations/${id}/approve`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ employeeId: employeeId || '' })
-        });
-        if (res.ok) {
-          alert('Reservation approved!');
-          loadPendingReservations();
-          loadRecentReservations();
-        } else {
-          alert('Failed to approve reservation.');
-        }
-      }
-
-      if (btn.classList.contains('reject-btn')) {
-        if (!confirm('Reject this reservation request?')) return;
-        const res = await fetch(`/api/reservations/${id}/reject`, { method: 'PUT' });
-        if (res.ok) {
-          alert('Reservation rejected.');
-          loadPendingReservations();
-        } else {
-          alert('Failed to reject reservation.');
-        }
-      }
-    }, { once: false });
 
   } catch (err) {
     console.error('Failed to load pending reservations:', err);

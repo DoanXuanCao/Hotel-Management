@@ -15,6 +15,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
     rel="stylesheet">
   <title>HMS</title>
+  <script>
+    (function(){
+      var r=localStorage.getItem('role'),t=localStorage.getItem('token');
+      if(!t||r!=='GUEST')window.location.replace('/');
+    })();
+  </script>
   <style>
     .my-reservations {
       padding: 40px 5%;

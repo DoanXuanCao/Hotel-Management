@@ -13,6 +13,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>App</title>
+  <script>
+    (function(){
+      var r=localStorage.getItem('role'),t=localStorage.getItem('token');
+      if(!t||(r!=='EMPLOYEE'&&r!=='ADMIN'))window.location.replace('/');
+    })();
+  </script>
 </head>
 <body>
   <div class="main">
@@ -132,10 +138,11 @@
             <i class="material-icons">arrow_drop_down</i>
           </div>
           <ul class="options" id="addStatusOptions">
+            <li class="option" data-value="PENDING">Pending</li>
             <li class="option" data-value="BOOKED">Booked</li>
             <li class="option" data-value="CHECKED_IN">Checked In</li>
             <li class="option" data-value="COMPLETED">Checked Out</li>
-            <li class="option" data-value="CANCELLED">Cancelled</li>
+            <li class="option" data-value="CANCELED">Cancelled</li>
             <li class="option" data-value="NO_SHOW">No Show</li>
           </ul>
         </div>
@@ -209,10 +216,11 @@
         <i class="material-icons">arrow_drop_down</i>
       </div>
       <ul class="options" id="updateStatusOptions">
+        <li class="option" data-value="PENDING">Pending</li>
         <li class="option" data-value="BOOKED">Booked</li>
         <li class="option" data-value="CHECKED_IN">Checked In</li>
         <li class="option" data-value="COMPLETED">Checked Out</li>
-        <li class="option" data-value="CANCELLED">Cancelled</li>
+        <li class="option" data-value="CANCELED">Cancelled</li>
         <li class="option" data-value="NO_SHOW">No Show</li>
       </ul>
     </div>

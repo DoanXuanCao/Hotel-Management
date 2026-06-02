@@ -30,14 +30,12 @@ loginForm.addEventListener("submit", async (e) => {
         const data = await res.json();
 
         localStorage.setItem("token", data.token);
+        localStorage.setItem("role", data.role);
         if (data.employeeId) {
             localStorage.setItem("employeeId", data.employeeId);
-        }
-        else if (data.guestId) {
+        } else if (data.guestId) {
             localStorage.setItem("guestId", data.guestId);
         }
-
-        alert("Login successful!");
 
         if (data.role === "GUEST") {
             window.location.href = "/guest";
@@ -46,7 +44,7 @@ loginForm.addEventListener("submit", async (e) => {
         } else if (data.role === "ADMIN") {
             window.location.href = "/admin";
         } else {
-            window.location.href = "/index";
+            window.location.href = "/";
         }
     } catch (err) {
         console.error(err);
@@ -78,8 +76,11 @@ registerForm.addEventListener("submit", async (e) => {
             return;
         }
 
-        alert("Registration successful!");
-        container.classList.remove("active");
+        const data = await res.json();
+        if (data.guestId) localStorage.setItem("guestId", data.guestId);
+        if (data.token) localStorage.setItem("token", data.token);
+        if (data.role) localStorage.setItem("role", data.role);
+        window.location.href = "/guest";
 
     } catch (err) {
         console.error(err);

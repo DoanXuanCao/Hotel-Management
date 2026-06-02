@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +28,12 @@ public class ReservationController {
   }
 
   @PostMapping
-  public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservation) {
-    return ResponseEntity.ok(reservationService.createReservation(reservation));
+  public ResponseEntity<?> createReservation(@RequestBody Reservation reservation) {
+    try {
+      return ResponseEntity.ok(reservationService.createReservation(reservation));
+    } catch (EntityNotFoundException e) {
+      return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+    }
   }
 
   @GetMapping("/{id}")
@@ -73,7 +78,8 @@ public class ReservationController {
   public ResponseEntity<ReservationDTO> approveReservation(
       @PathVariable UUID id,
       @RequestBody Map<String, String> body) {
-    UUID employeeId = body.containsKey("employeeId") ? UUID.fromString(body.get("employeeId")) : null;
+    String empIdStr = body.get("employeeId");
+    UUID employeeId = (empIdStr != null && !empIdStr.isBlank()) ? UUID.fromString(empIdStr) : null;
     return ResponseEntity.ok(reservationMapper.toDTO(reservationService.approveReservation(id, employeeId)));
   }
 

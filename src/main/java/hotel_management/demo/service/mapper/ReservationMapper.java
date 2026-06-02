@@ -28,9 +28,18 @@ public class ReservationMapper {
             .collect(Collectors.toList());
 
     UUID guestId = reservation.getGuest() != null ? reservation.getGuest().getId() : null;
-    String guestName = reservation.getGuest() != null
-        ? reservation.getGuest().getFirstName() + " " + reservation.getGuest().getLastName()
-        : null;
+    String guestName = null;
+    if (reservation.getGuest() != null) {
+      String firstName = reservation.getGuest().getFirstName();
+      String lastName = reservation.getGuest().getLastName();
+      if ((firstName != null && !firstName.isBlank()) || (lastName != null && !lastName.isBlank())) {
+        guestName = String.format("%s %s", firstName == null ? "" : firstName,
+            lastName == null ? "" : lastName).trim();
+      } else if (reservation.getGuest().getAccount() != null
+          && reservation.getGuest().getAccount().getUsername() != null) {
+        guestName = reservation.getGuest().getAccount().getUsername();
+      }
+    }
 
     UUID employeeId = reservation.getEmployee() != null ? reservation.getEmployee().getId() : null;
     String employeeName = reservation.getEmployee() != null

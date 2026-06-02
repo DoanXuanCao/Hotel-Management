@@ -72,11 +72,13 @@ public class GuestService {
     guest.setPhone(req.getPhone());
     guest.setAccount(account);
 
-    createGuest(guest);
+    guest = createGuest(guest);
 
     AuthResponse response = new AuthResponse();
     response.setMessage("Guest registered successfully");
     response.setRole(Role.GUEST);
+    response.setGuestId(guest.getId());
+    response.setToken("dummy");
 
     return response;
   }

@@ -9,50 +9,55 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import hotel_management.demo.dto.GuestDTO;
 import hotel_management.demo.schema.Guest;
 import hotel_management.demo.service.GuestService;
+import hotel_management.demo.service.mapper.GuestMapper;
 
 @RestController
 @RequestMapping("/api/guests")
 public class GuestController {
 
   private final GuestService guestService;
+  private final GuestMapper guestMapper = new GuestMapper();
 
   public GuestController(GuestService guestService) {
     this.guestService = guestService;
   }
 
   @PostMapping
-  public ResponseEntity<Guest> createGuest(@RequestBody Guest guest) {
+  public ResponseEntity<GuestDTO> createGuest(@RequestBody Guest guest) {
     try {
       Guest createdGuest = guestService.createGuest(guest);
-      return new ResponseEntity<>(createdGuest, HttpStatus.CREATED);
+      return new ResponseEntity<>(guestMapper.toDTO(createdGuest), HttpStatus.CREATED);
     } catch (IllegalArgumentException e) {
       return ResponseEntity.badRequest().build();
     }
   }
 
   @GetMapping
-  public ResponseEntity<List<Guest>> getAllGuests() {
-    List<Guest> guests = guestService.getAllGuests();
+  public ResponseEntity<List<GuestDTO>> getAllGuests() {
+    List<GuestDTO> guests = guestService.getAllGuests().stream()
+        .map(guestMapper::toDTO)
+        .collect(java.util.stream.Collectors.toList());
     return ResponseEntity.ok(guests);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Guest> getGuestById(@PathVariable UUID id) {
+  public ResponseEntity<GuestDTO> getGuestById(@PathVariable UUID id) {
     try {
       Guest guest = guestService.getGuestById(id);
-      return ResponseEntity.ok(guest);
+      return ResponseEntity.ok(guestMapper.toDTO(guest));
     } catch (EntityNotFoundException e) {
       return ResponseEntity.notFound().build();
     }
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Guest> updateGuest(@PathVariable UUID id, @RequestBody Guest guestDetails) {
+  public ResponseEntity<GuestDTO> updateGuest(@PathVariable UUID id, @RequestBody Guest guestDetails) {
     try {
       Guest updatedGuest = guestService.updateGuest(id, guestDetails);
-      return ResponseEntity.ok(updatedGuest);
+      return ResponseEntity.ok(guestMapper.toDTO(updatedGuest));
     } catch (EntityNotFoundException e) {
       return ResponseEntity.notFound().build();
     }
