@@ -6,12 +6,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
   <link rel="stylesheet" href="./assets/main.css">
   <link rel="stylesheet" href="./assets/base.css">
+  <link rel="stylesheet" href="./assets/reservation.css">
   <link rel="stylesheet" href="./assets/icon/themify-icons/themify-icons.css">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <title>App</title>
+  <script>
+    (function(){
+      var r=localStorage.getItem('role'),t=localStorage.getItem('token');
+      if(!t||( r!=='EMPLOYEE'&&r!=='ADMIN'))window.location.replace('/');
+    })();
+  </script>
 </head>
 
 <body>
@@ -113,6 +120,69 @@
       </div>
     </div>
     <div class="footer">
+    </div>
+  </div>
+  <!-- Modal update reservation (dùng từ dashboard) -->
+  <div class="modal" id="updateReservationModal">
+    <div class="add-client__form assign-room">
+      <div class="add-client__header">
+        <div class="header-text"><h1>Update Reservation</h1></div>
+        <div class="close-button closeModal"><i class="material-icons">close</i></div>
+      </div>
+      <div class="input-container select-menu" id="updateGuestSelect">
+        <h3>Guest</h3>
+        <div class="input-layout select-menu">
+          <span class="text" id="updateGuestText">Select Guest</span>
+          <i class="material-icons">arrow_drop_down</i>
+        </div>
+        <ul class="options" id="updateGuestOptions"></ul>
+      </div>
+      <div class="input-container select-menu" id="updateHotelSelect">
+        <h3>Hotel</h3>
+        <div class="input-layout select-menu">
+          <span class="text" id="updateHotelText">Select Hotel</span>
+          <i class="material-icons">arrow_drop_down</i>
+        </div>
+        <ul class="options" id="updateHotelOptions"></ul>
+      </div>
+      <div class="input-container select-menu" id="updateRoomSelect">
+        <h3>Room</h3>
+        <div class="input-layout select-menu">
+          <span class="text" id="updateRoomText">Select Room</span>
+          <i class="material-icons">arrow_drop_down</i>
+        </div>
+        <ul class="options" id="updateRoomOptions"></ul>
+      </div>
+      <div class="input-container">
+        <h3>Check-in Date</h3>
+        <div class="input-layout">
+          <i class="material-icons">calendar_month</i>
+          <input type="date" id="updateCheckin" class="auth-form__input client">
+        </div>
+      </div>
+      <div class="input-container">
+        <h3>Check-out Date</h3>
+        <div class="input-layout">
+          <i class="material-icons">calendar_month</i>
+          <input type="date" id="updateCheckout" class="auth-form__input client">
+        </div>
+      </div>
+      <div class="input-container select-menu" id="updateStatusSelect">
+        <h3>Status</h3>
+        <div class="input-layout select-menu">
+          <span class="text" id="updateStatusText">Select Status</span>
+          <i class="material-icons">arrow_drop_down</i>
+        </div>
+        <ul class="options" id="updateStatusOptions">
+          <li class="option" data-value="PENDING">Pending</li>
+          <li class="option" data-value="BOOKED">Booked</li>
+          <li class="option" data-value="CHECKED_IN">Checked In</li>
+          <li class="option" data-value="COMPLETED">Checked Out</li>
+          <li class="option" data-value="CANCELED">Cancelled</li>
+          <li class="option" data-value="NO_SHOW">No Show</li>
+        </ul>
+      </div>
+      <button class="auth__button add-client" id="confirmAddReservation">Update Reservation</button>
     </div>
   </div>
   <script src="script.js"></script>

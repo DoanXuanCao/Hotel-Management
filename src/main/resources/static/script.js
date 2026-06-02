@@ -2,6 +2,11 @@ let selectedEditHotelId = null;
 let selectedRoomTypeId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('a[href="/"]').forEach(a => {
+    if (a.closest('.logout')) {
+      a.addEventListener('click', () => localStorage.clear());
+    }
+  });
   initGlobalUI();
   initDashboard();
   initRegisterEmployeeForm();
@@ -106,21 +111,21 @@ async function loadGuests() {
       el2.innerHTML = '';
       data.forEach(guest => {
         let dob = "";
-        if (guest.account?.dob) {
-          const d = new Date(guest.account.dob);
+        if (guest.dob) {
+          const d = new Date(guest.dob);
           dob = !isNaN(d.getTime()) ? d.toLocaleDateString("vi-VN") : "";
         }
 
         const row = document.createElement('tr');
 
         row.innerHTML = `
-          <td>${guest.firstName} ${guest.lastName}</td>
+          <td>${guest.firstName || ''} ${guest.lastName || ''}</td>
           <td>${dob}</td>
-          <td>${guest.account.email}</td>
-          <td>${guest.phone}</td>
-          <td>${guest.address}</td>
-          <td>${guest.account.idNumber}</td>
-          <td>${guest.origin}</td>
+          <td>${guest.email || ''}</td>
+          <td>${guest.phone || ''}</td>
+          <td>${guest.address || ''}</td>
+          <td>${guest.idNumber || ''}</td>
+          <td>${guest.origin || ''}</td>
           <td>
             <button class="action-btn edit-btn" data-id="${guest.id}"><i class="ti-pencil"></i></button>
             <button class="action-btn delete-btn" data-id="${guest.id}"><i class="ti-trash"></i></button>
@@ -628,12 +633,12 @@ async function openUpdateGuestModal(guestId) {
     modal.querySelector('#updateAccountId').value = guest.accountId || "";
     modal.querySelector('#updateFirstName').value = guest.firstName || "";
     modal.querySelector('#updateLastName').value = guest.lastName || "";
-    modal.querySelector('#updateEmail').value = guest.account.email || "";
+    modal.querySelector('#updateEmail').value = guest.email || "";
     modal.querySelector('#updatePhone').value = guest.phone || "";
     modal.querySelector('#updateAddress').value = guest.address || "";
     modal.querySelector('#updateOrigin').value = guest.origin || "";
-    modal.querySelector('#updateDob').value = guest.account.dob || "";
-    modal.querySelector('#updateIdNumber').value = guest.account.idNumber || "";
+    modal.querySelector('#updateDob').value = guest.dob ? new Date(guest.dob).toISOString().split('T')[0] : "";
+    modal.querySelector('#updateIdNumber').value = guest.idNumber || "";
 
     modal.classList.add('active');
 
@@ -1930,6 +1935,24 @@ function initTableActions() {
   const reservationTableBody = document.querySelector('#reservationTableBody');
   if (reservationTableBody) {
     reservationTableBody.addEventListener('click', (e) => {
+      const target = e.target.closest('.action-btn');
+      if (!target) return;
+
+      const reservationId = target.getAttribute('data-id');
+
+      if (target.classList.contains('edit-btn')) {
+        openUpdateReservationModal(reservationId);
+      }
+      if (target.classList.contains('delete-btn')) {
+        deleteReservation(reservationId);
+      }
+    });
+  }
+
+  // Dashboard recent reservations table cũng cần edit/delete
+  const recentTableBody = document.querySelector('#recentTableBody');
+  if (recentTableBody) {
+    recentTableBody.addEventListener('click', (e) => {
       const target = e.target.closest('.action-btn');
       if (!target) return;
 
