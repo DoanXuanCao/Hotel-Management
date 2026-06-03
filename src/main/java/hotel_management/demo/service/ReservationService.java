@@ -121,21 +121,35 @@ public class ReservationService {
 
   @Transactional
   public Reservation updateReservation(UUID id, Reservation details) {
-    if (id == null) return null;
+    if (id == null)
+      return null;
     Reservation reservation = reservationRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
     ReservationStatus oldStatus = reservation.getStatus();
 
-    if (details.getCheckin() != null) reservation.setCheckin(details.getCheckin());
-    if (details.getCheckout() != null) reservation.setCheckout(details.getCheckout());
-    if (details.getStatus() != null) reservation.setStatus(details.getStatus());
+    if (details.getCheckin() != null)
+      reservation.setCheckin(details.getCheckin());
+    if (details.getCheckout() != null)
+      reservation.setCheckout(details.getCheckout());
+    if (details.getStatus() != null)
+      reservation.setStatus(details.getStatus());
 
     // Recalculate stayDuration when dates change
     if (reservation.getCheckin() != null && reservation.getCheckout() != null) {
       long days = ChronoUnit.DAYS.between(
           reservation.getCheckin().toLocalDate(), reservation.getCheckout().toLocalDate());
       reservation.setStayDuration((int) Math.max(days, 1));
+    }
+    if (reservation.getPayment() != null) {
+      double dailyTotal = reservation.getReservationRooms().stream()
+          .mapToDouble(rr -> {
+            Room currentRoom = roomService.getRoomById(rr.getRoom().getId());
+            return currentRoom.getRoomType().getBasePrice();
+          })
+          .sum();
+      int newAmount = (int) (dailyTotal * reservation.getStayDuration());
+      reservation.getPayment().setAmount(newAmount);
     }
 
     if (details.getGuest() != null && details.getGuest().getId() != null) {
@@ -169,8 +183,10 @@ public class ReservationService {
     return saved;
   }
 
-  private void applyRoomStatusForReservation(Reservation reservation, ReservationStatus newStatus, ReservationStatus oldStatus) {
-    if (newStatus == null || newStatus == oldStatus) return;
+  private void applyRoomStatusForReservation(Reservation reservation, ReservationStatus newStatus,
+      ReservationStatus oldStatus) {
+    if (newStatus == null || newStatus == oldStatus)
+      return;
 
     RoomStatus targetRoomStatus = null;
     if (newStatus == ReservationStatus.CHECKED_IN) {
@@ -187,8 +203,6 @@ public class ReservationService {
           .forEach(rr -> roomService.updateRoomStatus(rr.getRoom().getId(), finalStatus));
     }
   }
-
-
 
   @Transactional
   public void deleteReservation(UUID id) {
