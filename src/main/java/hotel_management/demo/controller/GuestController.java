@@ -69,12 +69,14 @@ public class GuestController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteGuest(@PathVariable UUID id) {
+  public ResponseEntity<?> deleteGuest(@PathVariable UUID id) {
     try {
       guestService.deleteGuest(id);
       return ResponseEntity.noContent().build();
     } catch (EntityNotFoundException e) {
       return ResponseEntity.notFound().build();
+    } catch (RuntimeException e) {
+      return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
     }
   }
 }

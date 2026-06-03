@@ -12,6 +12,7 @@ import hotel_management.demo.dto.AuthResponse;
 import hotel_management.demo.dto.RegisterGuestRequest;
 import hotel_management.demo.repository.AccountRepository;
 import hotel_management.demo.repository.GuestRepository;
+import hotel_management.demo.repository.ReservationRepository;
 import hotel_management.demo.schema.Account;
 import hotel_management.demo.schema.Guest;
 
@@ -19,19 +20,22 @@ import hotel_management.demo.schema.Guest;
 public class GuestService {
 
   private final PasswordEncoder passwordEncoder;
-
   private final GuestRepository guestRepository;
   private final AccountRepository accountRepository;
   private final AccountService accountService;
+  private final ReservationRepository reservationRepository;
 
   public GuestService(
       GuestRepository guestRepository,
       AccountRepository accountRepository,
-      AccountService accountService, PasswordEncoder passwordEncoder) {
+      AccountService accountService,
+      PasswordEncoder passwordEncoder,
+      ReservationRepository reservationRepository) {
     this.guestRepository = guestRepository;
     this.accountRepository = accountRepository;
     this.accountService = accountService;
     this.passwordEncoder = passwordEncoder;
+    this.reservationRepository = reservationRepository;
   }
 
   @Transactional
@@ -168,6 +172,12 @@ public class GuestService {
 
     if (accountId == null) {
       throw new EntityNotFoundException("Account not found for Guest ID: " + id);
+    }
+
+    if (reservationRepository.existsByGuestId(id)) {
+      throw new RuntimeException(
+          "Cannot delete guest: they have existing reservation records. " +
+          "Please cancel or delete their reservations first.");
     }
 
     guestRepository.delete(guest);

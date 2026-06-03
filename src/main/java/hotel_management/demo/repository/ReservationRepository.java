@@ -13,4 +13,6 @@ import hotel_management.demo.schema.Reservation;
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
   List<Reservation> findByStatus(ReservationStatus status);
   List<Reservation> findByGuestId(UUID guestId);
+  boolean existsByGuestId(UUID guestId);
+  List<Reservation> findByEmployeeId(UUID employeeId);
 }

@@ -1,6 +1,25 @@
 let selectedEditHotelId = null;
 let selectedRoomTypeId = null;
 
+// Search bar — lọc rows theo text trong mọi trang
+function initSearch() {
+  document.querySelectorAll('.search-bar__input').forEach(input => {
+    // Tìm tbody gần nhất trong cùng container
+    const container = input.closest('.booking__status') || input.closest('.booking__status.room__table');
+    if (!container) return;
+    const tbody = container.querySelector('tbody');
+    if (!tbody) return;
+
+    input.addEventListener('input', () => {
+      const term = input.value.toLowerCase().trim();
+      tbody.querySelectorAll('tr').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = term === '' || text.includes(term) ? '' : 'none';
+      });
+    });
+  });
+}
+
 function applyRoleBasedAccess() {
   const role = localStorage.getItem('role');
   const path = window.location.pathname;
@@ -47,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
       a.addEventListener('click', () => localStorage.clear());
     }
   });
+  initSearch();
   initGlobalUI();
   initDashboard();
   initRegisterEmployeeForm();
@@ -1521,7 +1541,10 @@ async function openUpdateReservationModal(reservationId) {
         body: JSON.stringify(updatedReservation)
       });
 
-      if (!updateRes.ok) throw new Error('Update reservation failed');
+      if (!updateRes.ok) {
+        const errData = await updateRes.json().catch(() => null);
+        throw new Error(errData?.message || 'Update reservation failed');
+      }
 
       alert('Reservation updated successfully!');
       modal.classList.remove('active');
@@ -2089,34 +2112,34 @@ async function updateEmployee(employeeId, updatedData) {
 }
 
 async function deleteEmployee(employeeId) {
-    if (!employeeId) return;
+  if (!employeeId) return;
 
-    if (!confirm(`Are you sure you want to delete employee ID: ${employeeId}?`)) {
-      return;
+  // Fetch employee name for a proper confirm message
+  let empName = employeeId;
+  try {
+    const info = await fetch(`/api/employees/${employeeId}`);
+    if (info.ok) {
+      const emp = await info.json();
+      empName = `${emp.firstname || ''} ${emp.lastname || ''}`.trim() || empName;
     }
+  } catch {}
 
-    try {
-      const response = await fetch(`/api/employees/${employeeId}`, {
-        method: 'DELETE',
-      });
+  if (!confirm(`Are you sure you want to delete employee "${empName}"?`)) return;
 
-      if (response.status === 204 || response.ok) {
-        alert(`Employee ${employeeId} deleted successfully!`);
-        console.log(`Employee deleted: ${employeeId}`);
-        loadEmployees();
-      } else {
-        const errorBody = await response.text();
-        let errorMessage = `Deletion failed: ${response.statusText}`;
-        try {
-          const errorJson = JSON.parse(errorBody);
-          errorMessage = errorJson.message || errorMessage;
-        } catch {}
-        throw new Error(errorMessage);
-      }
-    } catch (error) {
-      console.error('Failed to delete employee:', error);
-      alert(`Failed to delete employee: ${error.message}`);
+  try {
+    const response = await fetch(`/api/employees/${employeeId}`, { method: 'DELETE' });
+
+    if (response.status === 204 || response.ok) {
+      alert(`Employee "${empName}" deleted successfully.`);
+      loadEmployees();
+    } else {
+      const errData = await response.json().catch(() => null);
+      throw new Error(errData?.message || 'Deletion failed.');
     }
+  } catch (error) {
+    console.error('Failed to delete employee:', error);
+    alert(`Failed to delete employee: ${error.message}`);
+  }
 }
 
 function initEmployeeTableActions() {
@@ -2218,8 +2241,11 @@ async function deleteGuest(guestId) {
 
   const res = await fetch(`/api/guests/${guestId}`);
   const guest = await res.json();
+  const name = (guest.firstName || guest.lastName)
+    ? `${guest.firstName || ''} ${guest.lastName || ''}`.trim()
+    : (guest.username || guestId);
 
-  if (!confirm(`Are you sure you want to delete ${guest.firstName} ${guest.lastName}?`)) {
+  if (!confirm(`Are you sure you want to delete guest "${name}"?`)) {
     return;
   }
 
@@ -2228,9 +2254,12 @@ async function deleteGuest(guestId) {
       method: 'DELETE'
     });
 
-    if (!response.ok) throw new Error('Failed to delete guest.');
+    if (!response.ok) {
+      const errData = await response.json().catch(() => null);
+      throw new Error(errData?.message || 'Failed to delete guest.');
+    }
 
-    alert(`Guest deleted successfully.`);
+    alert(`Guest "${name}" deleted successfully.`);
     loadGuests();
   } catch (error) {
     console.error('Error deleting guest:', error);

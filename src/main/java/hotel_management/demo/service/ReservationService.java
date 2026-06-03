@@ -127,9 +127,16 @@ public class ReservationService {
 
     ReservationStatus oldStatus = reservation.getStatus();
 
-    reservation.setCheckin(details.getCheckin());
-    reservation.setCheckout(details.getCheckout());
-    reservation.setStatus(details.getStatus());
+    if (details.getCheckin() != null) reservation.setCheckin(details.getCheckin());
+    if (details.getCheckout() != null) reservation.setCheckout(details.getCheckout());
+    if (details.getStatus() != null) reservation.setStatus(details.getStatus());
+
+    // Recalculate stayDuration when dates change
+    if (reservation.getCheckin() != null && reservation.getCheckout() != null) {
+      long days = ChronoUnit.DAYS.between(
+          reservation.getCheckin().toLocalDate(), reservation.getCheckout().toLocalDate());
+      reservation.setStayDuration((int) Math.max(days, 1));
+    }
 
     if (details.getGuest() != null && details.getGuest().getId() != null) {
       Guest guest = guestService.getGuestById(details.getGuest().getId());
