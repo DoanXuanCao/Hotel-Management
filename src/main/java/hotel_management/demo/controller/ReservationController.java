@@ -50,8 +50,12 @@ public class ReservationController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Reservation> updateReservation(@PathVariable UUID id, @RequestBody Reservation reservation) {
-    return ResponseEntity.ok(reservationService.updateReservation(id, reservation));
+  public ResponseEntity<?> updateReservation(@PathVariable UUID id, @RequestBody Reservation reservation) {
+    try {
+      return ResponseEntity.ok(reservationMapper.toDTO(reservationService.updateReservation(id, reservation)));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(Map.of("message", e.getMessage() != null ? e.getMessage() : "Update failed"));
+    }
   }
 
   @DeleteMapping("/{id}")

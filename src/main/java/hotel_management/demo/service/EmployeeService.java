@@ -11,27 +11,31 @@ import jakarta.transaction.Transactional;
 import hotel_management.demo.constant.Role;
 import hotel_management.demo.repository.AccountRepository;
 import hotel_management.demo.repository.EmployeeRepository;
+import hotel_management.demo.repository.ReservationRepository;
 import hotel_management.demo.schema.Account;
 import hotel_management.demo.schema.Employee;
 import hotel_management.demo.schema.Hotel;
+import hotel_management.demo.schema.Reservation;
 
 @Service
 public class EmployeeService {
 
   private final PasswordEncoder passwordEncoder;
-
   private final EmployeeRepository employeeRepository;
   private final AccountRepository accountRepository;
   private final HotelService hotelService;
   private final AccountService accountService;
+  private final ReservationRepository reservationRepository;
 
   public EmployeeService(EmployeeRepository employeeRepository, AccountRepository accountRepository,
-      HotelService hotelService, AccountService accountService, PasswordEncoder passwordEncoder) {
+      HotelService hotelService, AccountService accountService, PasswordEncoder passwordEncoder,
+      ReservationRepository reservationRepository) {
     this.employeeRepository = employeeRepository;
     this.accountRepository = accountRepository;
     this.hotelService = hotelService;
     this.accountService = accountService;
     this.passwordEncoder = passwordEncoder;
+    this.reservationRepository = reservationRepository;
   }
 
   @Transactional
@@ -157,12 +161,18 @@ public class EmployeeService {
     return employeeRepository.save(existingEmployee);
   }
 
+  @Transactional
   public void deleteEmployee(UUID id) {
     Employee employee = getEmployeeById(id);
     UUID accountId = employee.getAccount().getId();
 
     if (accountId == null) {
-      throw new EntityNotFoundException("Account not found for Guest ID: " + id);
+      throw new EntityNotFoundException("Account not found for Employee ID: " + id);
+    }
+
+    // Unassign employee from all reservations before deleting (employee_id is nullable)
+    for (Reservation r : reservationRepository.findByEmployeeId(id)) {
+      r.setEmployee(null);
     }
 
     employeeRepository.delete(employee);

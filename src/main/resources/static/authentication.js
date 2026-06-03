@@ -55,9 +55,17 @@ loginForm.addEventListener("submit", async (e) => {
 registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const username = registerForm.querySelector("input[name='username']").value;
-    const email = registerForm.querySelector("input[name='email']").value;
-    const password = registerForm.querySelector("input[name='password']").value;
+    const firstName = registerForm.querySelector("input[name='firstName']").value.trim();
+    const lastName  = registerForm.querySelector("input[name='lastName']").value.trim();
+    const username  = registerForm.querySelector("input[name='username']").value.trim();
+    const email     = registerForm.querySelector("input[name='email']").value.trim();
+    const phone     = registerForm.querySelector("input[name='phone']").value.trim();
+    const password  = registerForm.querySelector("input[name='password']").value;
+
+    if (!username || !email || !password) {
+        alert("Username, email and password are required.");
+        return;
+    }
 
     try {
         const res = await fetch(`/api/auth/register/guest`, {
@@ -67,6 +75,9 @@ registerForm.addEventListener("submit", async (e) => {
                 username,
                 email,
                 password,
+                firstName: firstName || null,
+                lastName:  lastName  || null,
+                phone:     phone     || null,
             })
         });
 

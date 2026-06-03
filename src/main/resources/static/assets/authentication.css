@@ -176,3 +176,29 @@ form{
     border: 2px solid #fff;
     box-shadow: none;
 }
+
+/* ── Register form: compact to fit 6 fields ── */
+.form-box.register {
+    overflow-y: auto;
+    align-items: flex-start;
+    padding: 24px 36px;
+}
+.form-box.register h1 {
+    font-size: 2.6rem;
+    margin-bottom: 0;
+}
+.form-box.register .input-box {
+    margin: 1.2rem 0;
+}
+.input-row {
+    display: flex;
+    gap: 10px;
+    margin: 1.2rem 0;
+}
+.input-box.half {
+    flex: 1;
+    margin: 0;
+}
+.form-box.register .btn {
+    margin-top: 4px;
+}

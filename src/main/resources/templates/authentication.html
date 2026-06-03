@@ -32,23 +32,34 @@
 
         <div class="form-box register">
             <form action="">
-                <h1>Registration</h1>
-                <div class="input-box">
-                    <input type="text" name="username" placeholder="Username"
-                    required>
-                    <i class="material-icons">person</i>
+                <h1>Register</h1>
+                <div class="input-row">
+                    <div class="input-box half">
+                        <input type="text" name="firstName" placeholder="First Name">
+                        <i class="material-icons">person</i>
+                    </div>
+                    <div class="input-box half">
+                        <input type="text" name="lastName" placeholder="Last Name">
+                        <i class="material-icons">person</i>
+                    </div>
                 </div>
                 <div class="input-box">
-                    <input type="text" name="email" placeholder="Email"
-                    required>
+                    <input type="text" name="username" placeholder="Username" required>
+                    <i class="material-icons">account_circle</i>
+                </div>
+                <div class="input-box">
+                    <input type="email" name="email" placeholder="Email" required>
                     <i class="material-icons">email</i>
                 </div>
                 <div class="input-box">
-                    <input type="password" name="password" placeholder="Password"
-                    required>
+                    <input type="tel" name="phone" placeholder="Phone Number">
+                    <i class="material-icons">phone</i>
+                </div>
+                <div class="input-box">
+                    <input type="password" name="password" placeholder="Password" required>
                     <i class="material-icons">lock</i>
                 </div>
-                <button type="submit" class="btn">Registration</button>
+                <button type="submit" class="btn">Register</button>
             </form>
         </div>
 

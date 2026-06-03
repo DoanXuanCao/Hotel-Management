@@ -78,8 +78,14 @@ public class EmployeeController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteEmployee(@PathVariable UUID id) {
-    employeeService.deleteEmployee(id);
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<?> deleteEmployee(@PathVariable UUID id) {
+    try {
+      employeeService.deleteEmployee(id);
+      return ResponseEntity.noContent().build();
+    } catch (jakarta.persistence.EntityNotFoundException e) {
+      return ResponseEntity.notFound().build();
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
+    }
   }
 }
