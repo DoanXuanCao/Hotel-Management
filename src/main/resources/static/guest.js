@@ -1,4 +1,23 @@
-// guest.js – loaded only by guest.html
+﻿function authFetch(url, options) {
+  options = options || {};
+  var token = localStorage.getItem('token');
+  var merged = Object.assign({}, options, {
+    headers: Object.assign(
+      { 'Content-Type': 'application/json' },
+      options.headers || {},
+      token ? { 'Authorization': 'Bearer ' + token } : {}
+    )
+  });
+  return window.fetch(url, merged).then(function(res) {
+    if (res.status === 401) {
+      localStorage.clear();
+      window.location.href = '/';
+      throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+    }
+    return res;
+  });
+}
+// guest.js â€“ loaded only by guest.html
 document.addEventListener('DOMContentLoaded', () => {
   if (!document.getElementById('hotelGrid')) return;
 
@@ -7,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadMyReservations();
 });
 
-/* ─── Hotel grid ──────────────────────────────────────────── */
+/* â”€â”€â”€ Hotel grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 async function loadHotelsForGuest() {
   const grid = document.getElementById('hotelGrid');
   if (!grid) return;
@@ -22,7 +41,7 @@ async function loadHotelsForGuest() {
   ];
 
   try {
-    const res = await fetch('/api/hotels');
+    const res = await authFetch('/api/hotels');
     if (!res.ok) throw new Error('Failed to fetch hotels');
     const hotels = await res.json();
 
@@ -40,7 +59,7 @@ async function loadHotelsForGuest() {
       card.dataset.hotelId   = hotel.id;
       card.dataset.hotelName = hotel.name;
 
-      const stars = '★'.repeat(Math.round(hotel.rating || 0)) + '☆'.repeat(5 - Math.round(hotel.rating || 0));
+      const stars = 'â˜…'.repeat(Math.round(hotel.rating || 0)) + 'â˜†'.repeat(5 - Math.round(hotel.rating || 0));
 
       card.innerHTML = `
         <img src="${imgPool[idx % imgPool.length]}" alt="${hotel.name}"
@@ -64,7 +83,7 @@ async function loadHotelsForGuest() {
   }
 }
 
-/* ─── Booking modal ───────────────────────────────────────── */
+/* â”€â”€â”€ Booking modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 let _bookingSelectedRoomId = null;
 
 function initGuestModalEvents() {
@@ -89,13 +108,13 @@ async function openBookingModal(hotelId, hotelName) {
   document.getElementById('bookingCheckin').value  = '';
   document.getElementById('bookingCheckout').value = '';
   document.getElementById('bookingNote').value     = '';
-  roomText.textContent    = 'Loading rooms…';
+  roomText.textContent    = 'Loading roomsâ€¦';
   roomText.style.color    = '#999';
   optionsList.innerHTML   = '';
   modal.classList.add('active');
 
   try {
-    const res   = await fetch(`/api/rooms/hotels/${hotelId}`);
+    const res   = await authFetch(`/api/rooms/hotels/${hotelId}`);
     const rooms = await res.json();
     const available = rooms.filter(r => r.status === 'AVAILABLE');
 
@@ -111,7 +130,7 @@ async function openBookingModal(hotelId, hotelName) {
       li.className = 'option';
       const price = Number(room.basePrice || 0).toLocaleString('vi-VN');
       li.innerHTML = `<strong>Room ${room.roomNumber}</strong>&nbsp;
-        <span style="color:#666;font-size:12px;">${room.roomTypeName || ''} · ${price}₫/night</span>`;
+        <span style="color:#666;font-size:12px;">${room.roomTypeName || ''} Â· ${price}â‚«/night</span>`;
 
       li.addEventListener('click', e => {
         e.stopPropagation();
@@ -146,10 +165,10 @@ async function submitBooking() {
 
   const confirmBtn = document.getElementById('confirmBookingBtn');
   confirmBtn.disabled = true;
-  confirmBtn.textContent = 'Submitting…';
+  confirmBtn.textContent = 'Submittingâ€¦';
 
   try {
-    const res = await fetch('/api/reservations', {
+    const res = await authFetch('/api/reservations', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -163,7 +182,7 @@ async function submitBooking() {
 
     if (!res.ok) throw new Error(await res.text());
 
-    alert('✓ Booking request submitted! Please wait for staff approval.');
+    alert('âœ“ Booking request submitted! Please wait for staff approval.');
     document.getElementById('bookingModal').classList.remove('active');
     loadMyReservations();
 
@@ -176,7 +195,7 @@ async function submitBooking() {
   }
 }
 
-/* ─── My Bookings ─────────────────────────────────────────── */
+/* â”€â”€â”€ My Bookings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 async function loadMyReservations() {
   const list    = document.getElementById('myReservationList');
   if (!list) return;
@@ -187,10 +206,10 @@ async function loadMyReservations() {
     return;
   }
 
-  list.innerHTML = '<p class="no-reservations" style="color:#999;">Loading your bookings…</p>';
+  list.innerHTML = '<p class="no-reservations" style="color:#999;">Loading your bookingsâ€¦</p>';
 
   try {
-    const res  = await fetch(`/api/reservations/guest/${guestId}`);
+    const res  = await authFetch(`/api/reservations/guest/${guestId}`);
     if (!res.ok) throw new Error('Failed');
     const data = await res.json();
 
@@ -217,8 +236,8 @@ async function loadMyReservations() {
 
       const roomInfo  = r.rooms?.length ? r.rooms.map(rm => `Room ${rm.roomNumber}`).join(', ') : 'N/A';
       const hotelInfo = r.rooms?.length ? r.rooms.map(rm => rm.hotelName).join(', ')            : 'N/A';
-      const checkin   = r.checkin  ? new Date(r.checkin).toLocaleDateString('vi-VN')  : '—';
-      const checkout  = r.checkout ? new Date(r.checkout).toLocaleDateString('vi-VN') : '—';
+      const checkin   = r.checkin  ? new Date(r.checkin).toLocaleDateString('vi-VN')  : 'â€”';
+      const checkout  = r.checkout ? new Date(r.checkout).toLocaleDateString('vi-VN') : 'â€”';
       const st        = statusLabel[r.status] || { label: r.status, cls: 'pending' };
 
       const cancelBtn = cancellable.has(r.status)
@@ -255,9 +274,9 @@ async function loadMyReservations() {
         btn.addEventListener('click', async () => {
           if (!confirm('Cancel this booking request?')) return;
           btn.disabled = true;
-          btn.textContent = 'Cancelling…';
+          btn.textContent = 'Cancellingâ€¦';
           try {
-            const res = await fetch(`/api/reservations/${r.id}/cancel`, { method: 'PUT' });
+            const res = await authFetch(`/api/reservations/${r.id}/cancel`, { method: 'PUT' });
             if (!res.ok) throw new Error('Failed');
             alert('Booking cancelled successfully.');
             loadMyReservations();
@@ -277,3 +296,4 @@ async function loadMyReservations() {
     list.innerHTML = '<p class="no-reservations" style="color:#c0392b;">Error loading bookings.</p>';
   }
 }
+

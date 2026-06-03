@@ -1,10 +1,29 @@
+﻿function authFetch(url, options) {
+  options = options || {};
+  var token = localStorage.getItem('token');
+  var merged = Object.assign({}, options, {
+    headers: Object.assign(
+      { 'Content-Type': 'application/json' },
+      options.headers || {},
+      token ? { 'Authorization': 'Bearer ' + token } : {}
+    )
+  });
+  return window.fetch(url, merged).then(function(res) {
+    if (res.status === 401) {
+      localStorage.clear();
+      window.location.href = '/';
+      throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+    }
+    return res;
+  });
+}
 let selectedEditHotelId = null;
 let selectedRoomTypeId = null;
 
-// Search bar — lọc rows theo text trong mọi trang
+// Search bar â€” lá»c rows theo text trong má»i trang
 function initSearch() {
   document.querySelectorAll('.search-bar__input').forEach(input => {
-    // Tìm tbody gần nhất trong cùng container
+    // TÃ¬m tbody gáº§n nháº¥t trong cÃ¹ng container
     const container = input.closest('.booking__status') || input.closest('.booking__status.room__table');
     if (!container) return;
     const tbody = container.querySelector('tbody');
@@ -24,14 +43,14 @@ function applyRoleBasedAccess() {
   const role = localStorage.getItem('role');
   const path = window.location.pathname;
 
-  // Guard: Employee không vào được trang Admin Only
+  // Guard: Employee khÃ´ng vÃ o Ä‘Æ°á»£c trang Admin Only
   if (role !== 'ADMIN' && (path === '/employee' || path === '/setting')) {
     window.location.replace('/');
     return;
   }
 
   if (role !== 'ADMIN') {
-    // Ẩn nav links dành cho Admin
+    // áº¨n nav links dÃ nh cho Admin
     ['/employee', '/setting'].forEach(href => {
       document.querySelectorAll(`.nav__links-item a[href="${href}"]`).forEach(a => {
         const li = a.closest('.nav__links-item');
@@ -39,7 +58,7 @@ function applyRoleBasedAccess() {
       });
     });
 
-    // UC24: Ẩn "Add room types" button và toàn bộ Room Types section
+    // UC24: áº¨n "Add room types" button vÃ  toÃ n bá»™ Room Types section
     document.querySelectorAll('[data-target="#addRoomTypeModal"]').forEach(btn => {
       const container = btn.closest('.manage-room-types') || btn.closest('.section-header');
       if (container) container.style.display = 'none';
@@ -52,7 +71,7 @@ function applyRoleBasedAccess() {
       }
     });
 
-    // UC21 giới hạn: Employee không tạo mới Hotel (chỉ Admin mới thêm hotel)
+    // UC21 giá»›i háº¡n: Employee khÃ´ng táº¡o má»›i Hotel (chá»‰ Admin má»›i thÃªm hotel)
     document.querySelectorAll('[data-target="#addHotelModal"]').forEach(btn => {
       btn.style.display = 'none';
     });
@@ -161,7 +180,7 @@ function initDashboard() {
 
 async function loadGuests() {
   try {
-    const res = await fetch('/api/guests');
+    const res = await authFetch('/api/guests');
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
     const el = document.querySelector('.dashboard__list .dashboard__item:nth-child(1) h1');
@@ -201,7 +220,7 @@ async function loadGuests() {
 
 async function loadNoReservation() {
   try {
-    const res = await fetch('/api/reservations');
+    const res = await authFetch('/api/reservations');
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
     const el = document.querySelector('.dashboard__list .dashboard__item:nth-child(2) h1');
@@ -213,7 +232,7 @@ async function loadNoReservation() {
 
 async function loadAmount() {
   try {
-    const res = await fetch('/api/payments');
+    const res = await authFetch('/api/payments');
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
     const el = document.querySelector('.dashboard__list .dashboard__item:nth-child(3) h1');
@@ -230,7 +249,7 @@ async function loadAmount() {
 
 async function loadPrice(id) {
   try {
-    const res = await fetch(`/api/payments/reservation/${id}`);
+    const res = await authFetch(`/api/payments/reservation/${id}`);
     if (!res.ok) return null;
     const data = await res.json();
     return data.amount;
@@ -241,7 +260,7 @@ async function loadPrice(id) {
 
 async function loadRecentReservations() {
   try {
-    const res = await fetch('/api/reservations');
+    const res = await authFetch('/api/reservations');
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
 
@@ -311,7 +330,7 @@ async function loadRecentReservations() {
       const priceVal = await loadPrice(reservation.id);
       priceTd.textContent = priceVal != null 
         ? Number(priceVal).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) 
-        : '0₫';
+        : '0â‚«';
       row.appendChild(priceTd);
 
       const statusTd = document.createElement('td');
@@ -351,7 +370,7 @@ async function loadRecentReservations() {
 
 async function loadEmployees() {
   try {
-    const response = await fetch('/api/employees/');
+    const response = await authFetch('/api/employees/');
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -420,7 +439,7 @@ async function loadOrphanedAccounts() {
   if (!section || !tbody) return;
 
   try {
-    const res = await fetch('/api/accounts/orphaned');
+    const res = await authFetch('/api/accounts/orphaned');
     if (!res.ok) return;
     const accounts = await res.json();
 
@@ -440,13 +459,13 @@ async function loadOrphanedAccounts() {
         <td>
           <button class="action-btn delete-btn" data-account-id="${acc.id}"
             style="background:#ffebee; color:#c62828; border:none; border-radius:6px; padding:4px 12px; cursor:pointer;">
-            Xóa
+            XÃ³a
           </button>
         </td>
       `;
       row.querySelector('.delete-btn').addEventListener('click', async () => {
         if (!confirm(`Delete broken account "${acc.username}"?`)) return;
-        const del = await fetch(`/api/accounts/${acc.id}`, { method: 'DELETE' });
+        const del = await authFetch(`/api/accounts/${acc.id}`, { method: 'DELETE' });
         if (del.ok) {
           alert(`Account "${acc.username}" deleted. Recreate it properly via "Add new employee".`);
           loadOrphanedAccounts();
@@ -466,7 +485,7 @@ async function loadHotels() {
   if (!tableBody) return;
 
   try {
-    const response = await fetch('/api/hotels');
+    const response = await authFetch('/api/hotels');
     if (!response.ok) throw new Error('Failed to fetch hotels.');
 
     const hotels = await response.json();
@@ -512,7 +531,7 @@ async function loadRooms() {
   const hotelId = document.querySelector("meta[name='hotel-id']").content;
 
   try {
-    const response = await fetch(`/api/rooms/hotels/${hotelId}`);
+    const response = await authFetch(`/api/rooms/hotels/${hotelId}`);
     if (!response.ok) throw new Error('Failed to fetch rooms.');
     
     const rooms = await response.json();
@@ -555,7 +574,7 @@ async function loadRoomTypesList() {
   listContainer.innerHTML = '';
   
   try {
-    const response = await fetch(`/api/roomtypes`);
+    const response = await authFetch(`/api/roomtypes`);
     if (!response.ok) throw new Error('Failed to fetch room types.');
 
     const roomTypes = await response.json();
@@ -592,7 +611,7 @@ async function loadPayment() {
   if (!tableBody || !reservationId) return;
 
   try {
-    const response = await fetch(`/api/payments/reservation/${reservationId}`);
+    const response = await authFetch(`/api/payments/reservation/${reservationId}`);
 
     if (!response.ok) {
       throw new Error('Failed to fetch payments');
@@ -710,7 +729,7 @@ function initAddGuestModal() {
 
     try {
       console.log(newGuest);
-      const res = await fetch('/api/guests', {
+      const res = await authFetch('/api/guests', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newGuest)
@@ -734,7 +753,7 @@ async function openUpdateGuestModal(guestId) {
   if (!modal) return;
 
   try {
-    const res = await fetch(`/api/guests/${guestId}`);
+    const res = await authFetch(`/api/guests/${guestId}`);
     if (!res.ok) throw new Error("Failed to fetch guest");
 
     const guest = await res.json();
@@ -776,7 +795,7 @@ async function openUpdateGuestModal(guestId) {
       };
 
       try {
-        const res = await fetch(`/api/guests/${id}`, {
+        const res = await authFetch(`/api/guests/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
@@ -827,7 +846,7 @@ function initAddHotelModal() {
 
     try {
       console.log(newHotel);
-      const response = await fetch('/api/hotels', {
+      const response = await authFetch('/api/hotels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newHotel)
@@ -849,7 +868,7 @@ async function openUpdateHotelModal(hotelId) {
   if (!modal) return;
   
   try {
-    const res = await fetch(`/api/hotels/${hotelId}`);
+    const res = await authFetch(`/api/hotels/${hotelId}`);
     if (!res.ok) throw new Error('Failed to fetch hotel data.');
 
     const hotel = await res.json();
@@ -874,7 +893,7 @@ async function openUpdateHotelModal(hotelId) {
       };
       
       try {
-        const response = await fetch(`/api/hotels/${hotelId}`, {
+        const response = await authFetch(`/api/hotels/${hotelId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedHotel)
@@ -910,7 +929,7 @@ async function initAddRoomModal() {
   
   const confirmBtn = modal.querySelector('#confirmAddRoomBtn');
 
-  const res = await fetch(`/api/roomtypes`);
+  const res = await authFetch(`/api/roomtypes`);
 
   const roomTypes = await res.json();
   
@@ -962,7 +981,7 @@ async function initAddRoomModal() {
 
     try {
         console.log(newRoom);
-        const response = await fetch('/api/rooms', {
+        const response = await authFetch('/api/rooms', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newRoom)
@@ -988,7 +1007,7 @@ async function openUpdateRoomModal(roomId) {
 
   const confirmBtn = document.querySelector("#confirmUpdateRoomBtn");
 
-  const room = await fetch(`/api/rooms/${roomId}`).then(res => {
+  const room = await authFetch(`/api/rooms/${roomId}`).then(res => {
     if (!res.ok) throw new Error("Failed to fetch room data.");
     return res.json();
   });
@@ -1041,7 +1060,7 @@ async function openUpdateRoomModal(roomId) {
   typeText.innerText = room.roomTypeName || "Select Room Type";
   typeText.style.color = room.roomTypeName ? "#333" : "#888";
 
-  const roomTypes = await fetch(`/api/roomtypes`).then(res => res.json());
+  const roomTypes = await authFetch(`/api/roomtypes`).then(res => res.json());
 
   roomTypes.forEach(type => {
     const option = document.createElement("li");
@@ -1093,7 +1112,7 @@ async function openUpdateRoomModal(roomId) {
     try {
       console.log(updateRoom);
 
-      const response = await fetch(`/api/rooms/${updatedRoomId}`, {
+      const response = await authFetch(`/api/rooms/${updatedRoomId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updateRoom)
@@ -1148,7 +1167,7 @@ function initRoomTypeModal() {
     };
 
     try {
-      const response = await fetch('/api/roomtypes', {
+      const response = await authFetch('/api/roomtypes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newRoomType)
@@ -1186,7 +1205,7 @@ async function initAddReservationModal() {
   const guestOptions = modal.querySelector('#addGuestOptions');
   guestOptions.innerHTML = '';
 
-  const guestsRes = await fetch('/api/guests');
+  const guestsRes = await authFetch('/api/guests');
   const guests = await guestsRes.json();
 
   guests.forEach(g => {
@@ -1211,7 +1230,7 @@ async function initAddReservationModal() {
   const hotelOptions = modal.querySelector('#addHotelOptions');
   hotelOptions.innerHTML = '';
 
-  const hotelsRes = await fetch('/api/hotels');
+  const hotelsRes = await authFetch('/api/hotels');
   const hotels = await hotelsRes.json();
 
   const roomSelectContainer = modal.querySelector('#addRoomSelect');
@@ -1248,7 +1267,7 @@ async function initAddReservationModal() {
     roomSelectContainer.style.opacity = '1';
     roomSelectContainer.style.pointerEvents = 'auto';
 
-    const res = await fetch(`/api/rooms/hotels/${hotelId}`);
+    const res = await authFetch(`/api/rooms/hotels/${hotelId}`);
     const rooms = await res.json();
     const availableRooms = rooms.filter(r => r.status === 'AVAILABLE');
 
@@ -1317,7 +1336,7 @@ async function initAddReservationModal() {
     };
 
     try {
-      const res = await fetch('/api/reservations', {
+      const res = await authFetch('/api/reservations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reservation)
@@ -1352,7 +1371,7 @@ async function initAddReservationModal() {
   
     // Fetch existing payment data
     try {
-      const res = await fetch(`/api/payments/${paymentId}`);
+      const res = await authFetch(`/api/payments/${paymentId}`);
       if (!res.ok) throw new Error('Failed to load payment data');
   
       const payment = await res.json();
@@ -1402,7 +1421,7 @@ async function initAddReservationModal() {
       };
   
       try {
-        const res = await fetch(`/api/payments/${paymentId}`, {
+        const res = await authFetch(`/api/payments/${paymentId}`, {
           method: 'PUT', // Use PUT for update
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedPayment)
@@ -1455,7 +1474,7 @@ async function openUpdateReservationModal(reservationId) {
   let selectedStatus  = null;
 
   // Fetch reservation data
-  const res = await fetch(`/api/reservations/${reservationId}`);
+  const res = await authFetch(`/api/reservations/${reservationId}`);
   if (!res.ok) {
     alert('Failed to load reservation');
     return;
@@ -1489,7 +1508,7 @@ async function openUpdateReservationModal(reservationId) {
   const hotelOptions = modal.querySelector('#updateHotelOptions');
   hotelOptions.innerHTML = '';
 
-  const hotelsRes = await fetch('/api/hotels');
+  const hotelsRes = await authFetch('/api/hotels');
   const hotels = await hotelsRes.json();
 
   hotels.forEach(h => {
@@ -1535,7 +1554,7 @@ async function openUpdateReservationModal(reservationId) {
     };
 
     try {
-      const updateRes = await fetch(`/api/reservations/${reservationId}`, {
+      const updateRes = await authFetch(`/api/reservations/${reservationId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedReservation)
@@ -1561,7 +1580,7 @@ async function openUpdateReservationModal(reservationId) {
     const roomOptions = modal.querySelector('#updateRoomOptions'); // updated
     roomOptions.innerHTML = '';
 
-    const res = await fetch(`/api/rooms/hotels/${hotelId}`);
+    const res = await authFetch(`/api/rooms/hotels/${hotelId}`);
     const rooms = await res.json();
 
     rooms.forEach(r => {
@@ -1601,7 +1620,7 @@ async function openUpdateRoomTypeModal(roomTypeId) {
   if (!roomTypeId) return alert("Room type ID is missing for update");
 
   try {
-    const response = await fetch(`/api/roomtypes/${roomTypeId}`);
+    const response = await authFetch(`/api/roomtypes/${roomTypeId}`);
     if (!response.ok) throw new Error('Failed to fetch room type data.');
 
     const roomType = await response.json();
@@ -1631,7 +1650,7 @@ async function openUpdateRoomTypeModal(roomTypeId) {
       };
 
       try {
-        const updateResponse = await fetch(`/api/roomtypes/${roomTypeId}`, {
+        const updateResponse = await authFetch(`/api/roomtypes/${roomTypeId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedRoomType)
@@ -1676,7 +1695,7 @@ async function initRegisterEmployeeForm() {
   try {
     hotelText.innerText = "Loading Hotels...";
     
-    const res = await fetch('/api/hotels');
+    const res = await authFetch('/api/hotels');
     if (!res.ok) throw new Error('Failed to fetch hotels');
     
     const hotels = await res.json();
@@ -1756,7 +1775,7 @@ async function initRegisterEmployeeForm() {
     };
 
     try {
-      const response = await fetch('/api/employees', {
+      const response = await authFetch('/api/employees', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
@@ -1803,7 +1822,7 @@ async function openEditEmployeeModal(employeeId) {
   if (!modal) return;
 
   try {
-    const res = await fetch(`/api/employees/${employeeId}`);
+    const res = await authFetch(`/api/employees/${employeeId}`);
     if (!res.ok) throw new Error('Failed to fetch employee data');
     
     const employee = await res.json();
@@ -1859,7 +1878,7 @@ function initUpdateEmployeeModal() {
   async function fetchEditHotels(currentHotelId) {
       try {
           hotelText.innerText = "Loading Hotels...";
-          const res = await fetch('/api/hotels');
+          const res = await authFetch('/api/hotels');
           if (!res.ok) throw new Error('Failed to fetch hotels');
           
           const hotels = await res.json();
@@ -2061,7 +2080,7 @@ function initTableActions() {
     });
   }
 
-  // Dashboard recent reservations table cũng cần edit/delete
+  // Dashboard recent reservations table cÅ©ng cáº§n edit/delete
   const recentTableBody = document.querySelector('#recentTableBody');
   if (recentTableBody) {
     recentTableBody.addEventListener('click', (e) => {
@@ -2084,7 +2103,7 @@ async function updateEmployee(employeeId, updatedData) {
   if (!employeeId) return alert("Employee ID is missing for update.");
 
   try {
-    const response = await fetch(`/api/employees/${employeeId}`, {
+    const response = await authFetch(`/api/employees/${employeeId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedData)
@@ -2117,7 +2136,7 @@ async function deleteEmployee(employeeId) {
   // Fetch employee name for a proper confirm message
   let empName = employeeId;
   try {
-    const info = await fetch(`/api/employees/${employeeId}`);
+    const info = await authFetch(`/api/employees/${employeeId}`);
     if (info.ok) {
       const emp = await info.json();
       empName = `${emp.firstname || ''} ${emp.lastname || ''}`.trim() || empName;
@@ -2127,7 +2146,7 @@ async function deleteEmployee(employeeId) {
   if (!confirm(`Are you sure you want to delete employee "${empName}"?`)) return;
 
   try {
-    const response = await fetch(`/api/employees/${employeeId}`, { method: 'DELETE' });
+    const response = await authFetch(`/api/employees/${employeeId}`, { method: 'DELETE' });
 
     if (response.status === 204 || response.ok) {
       alert(`Employee "${empName}" deleted successfully.`);
@@ -2163,14 +2182,14 @@ function initEmployeeTableActions() {
 
   //room
 async function deleteRoom(roomId) {
-  const res = await fetch(`/api/rooms/${roomId}`);
+  const res = await authFetch(`/api/rooms/${roomId}`);
   const room = await res.json();
   if (!confirm(`Are you sure you want to delete Room ${room.roomNumber} of ${room.hotelName} ?`)) {
     return;
   }
 
   try {
-    const response = await fetch(`/api/rooms/${roomId}`, {
+    const response = await authFetch(`/api/rooms/${roomId}`, {
       method: 'DELETE'
     });
 
@@ -2190,7 +2209,7 @@ async function deleteRoomType(roomTypeId) {
   if (!roomTypeId) return alert("Room type ID is missing for update");
   
   try {
-    const response = await fetch(`/api/roomtypes/${roomTypeId}`, {
+    const response = await authFetch(`/api/roomtypes/${roomTypeId}`, {
         method: 'DELETE'
     });
 
@@ -2209,7 +2228,7 @@ async function updateGuest(guestId, updatedData) {
   if (!guestId) return alert("Guest ID is missing for update.");
 
   try {
-    const response = await fetch(`/api/guests/${guestId}`, {
+    const response = await authFetch(`/api/guests/${guestId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedData)
@@ -2239,7 +2258,7 @@ async function updateGuest(guestId, updatedData) {
 async function deleteGuest(guestId) {
   if (!guestId) return;
 
-  const res = await fetch(`/api/guests/${guestId}`);
+  const res = await authFetch(`/api/guests/${guestId}`);
   const guest = await res.json();
   const name = (guest.firstName || guest.lastName)
     ? `${guest.firstName || ''} ${guest.lastName || ''}`.trim()
@@ -2250,7 +2269,7 @@ async function deleteGuest(guestId) {
   }
 
   try {
-    const response = await fetch(`/api/guests/${guestId}`, {
+    const response = await authFetch(`/api/guests/${guestId}`, {
       method: 'DELETE'
     });
 
@@ -2270,7 +2289,7 @@ async function deleteGuest(guestId) {
 async function deleteHotel(hotelId) {
   if (!hotelId) return;
 
-  const res = await fetch(`/api/hotels/${hotelId}`);
+  const res = await authFetch(`/api/hotels/${hotelId}`);
   const hotel = await res.json();
 
   if (!confirm(`Are you sure you want to delete Hotel ${hotel.name} ?`)) {
@@ -2278,7 +2297,7 @@ async function deleteHotel(hotelId) {
   }
   
   try {
-    const response = await fetch(`/api/hotels/${hotelId}`, {
+    const response = await authFetch(`/api/hotels/${hotelId}`, {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Failed to delete hotel.');
@@ -2294,7 +2313,7 @@ async function deleteHotel(hotelId) {
 async function deleteReservation(reservationId) {
   if (!reservationId) return;
 
-  const res = await fetch(`/api/reservations/${reservationId}`);
+  const res = await authFetch(`/api/reservations/${reservationId}`);
   const reservation = await res.json();
 
   if (!confirm(`Are you sure you want to delete reservation for ${reservation.guestName} on ${reservation.date}?`)) {
@@ -2302,7 +2321,7 @@ async function deleteReservation(reservationId) {
   }
 
   try {
-    const response = await fetch(`/api/reservations/${reservationId}`, {
+    const response = await authFetch(`/api/reservations/${reservationId}`, {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Failed to delete reservation.');
@@ -2318,7 +2337,7 @@ async function deleteReservation(reservationId) {
 async function deletePayment(paymentId) {
   if (!paymentId) return;
 
-  const res = await fetch(`/api/payments/${paymentId}`);
+  const res = await authFetch(`/api/payments/${paymentId}`);
   const payment = await res.json();
 
   const date = new Date(payment.reservation.checkin).toLocaleDateString('vi-VN');
@@ -2328,7 +2347,7 @@ async function deletePayment(paymentId) {
   }
 
   try {
-    const response = await fetch(`/api/payments/${paymentId}`, {
+    const response = await authFetch(`/api/payments/${paymentId}`, {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Failed to delete payment.');
@@ -2352,7 +2371,7 @@ function initPendingTableActions() {
 
     if (btn.classList.contains('approve-btn')) {
       const employeeId = localStorage.getItem('employeeId');
-      const res = await fetch(`/api/reservations/${id}/approve`, {
+      const res = await authFetch(`/api/reservations/${id}/approve`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ employeeId: employeeId || '' })
@@ -2368,7 +2387,7 @@ function initPendingTableActions() {
 
     if (btn.classList.contains('reject-btn')) {
       if (!confirm('Reject this reservation request?')) return;
-      const res = await fetch(`/api/reservations/${id}/reject`, { method: 'PUT' });
+      const res = await authFetch(`/api/reservations/${id}/reject`, { method: 'PUT' });
       if (res.ok) {
         alert('Reservation rejected.');
         loadPendingReservations();
@@ -2385,7 +2404,7 @@ async function loadPendingReservations() {
   if (!tbody) return;
 
   try {
-    const res = await fetch('/api/reservations/pending');
+    const res = await authFetch('/api/reservations/pending');
     if (!res.ok) throw new Error('Failed to load pending reservations');
     const data = await res.json();
 
@@ -2437,7 +2456,7 @@ async function initializeDropdown(apiUrl, listElement, textElement, initialText,
   setterCallback(null);
 
   try {
-    const res = await fetch(apiUrl);
+    const res = await authFetch(apiUrl);
     if (!res.ok) throw new Error(`Failed to fetch from ${apiUrl}`);
 
     const items = await res.json();
