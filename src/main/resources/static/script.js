@@ -1,4 +1,4 @@
-﻿function authFetch(url, options) {
+function authFetch(url, options) {
   options = options || {};
   var token = localStorage.getItem('token');
   var merged = Object.assign({}, options, {
@@ -12,7 +12,7 @@
     if (res.status === 401) {
       localStorage.clear();
       window.location.href = '/';
-      throw new Error('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+      throw new Error('Session expired. Please login again.');
     }
     return res;
   });
@@ -20,10 +20,10 @@
 let selectedEditHotelId = null;
 let selectedRoomTypeId = null;
 
-// Search bar â€” lá»c rows theo text trong má»i trang
+// Search bar — lọc rows theo text trong mọi trang
 function initSearch() {
   document.querySelectorAll('.search-bar__input').forEach(input => {
-    // TÃ¬m tbody gáº§n nháº¥t trong cÃ¹ng container
+    // Tìm tbody gần nhất trong cùng container
     const container = input.closest('.booking__status') || input.closest('.booking__status.room__table');
     if (!container) return;
     const tbody = container.querySelector('tbody');
@@ -43,14 +43,14 @@ function applyRoleBasedAccess() {
   const role = localStorage.getItem('role');
   const path = window.location.pathname;
 
-  // Guard: Employee khÃ´ng vÃ o Ä‘Æ°á»£c trang Admin Only
+  // Guard: Employee không vào được trang Admin Only
   if (role !== 'ADMIN' && (path === '/employee' || path === '/setting')) {
     window.location.replace('/');
     return;
   }
 
   if (role !== 'ADMIN') {
-    // áº¨n nav links dÃ nh cho Admin
+    // Ẩn nav links dành cho Admin
     ['/employee', '/setting'].forEach(href => {
       document.querySelectorAll(`.nav__links-item a[href="${href}"]`).forEach(a => {
         const li = a.closest('.nav__links-item');
@@ -58,7 +58,7 @@ function applyRoleBasedAccess() {
       });
     });
 
-    // UC24: áº¨n "Add room types" button vÃ  toÃ n bá»™ Room Types section
+    // UC24: Ẩn "Add room types" button và toàn bộ Room Types section
     document.querySelectorAll('[data-target="#addRoomTypeModal"]').forEach(btn => {
       const container = btn.closest('.manage-room-types') || btn.closest('.section-header');
       if (container) container.style.display = 'none';
@@ -71,7 +71,7 @@ function applyRoleBasedAccess() {
       }
     });
 
-    // UC21 giá»›i háº¡n: Employee khÃ´ng táº¡o má»›i Hotel (chá»‰ Admin má»›i thÃªm hotel)
+    // UC21 giới hạn: Employee không tạo mới Hotel (chỉ Admin mới thêm hotel)
     document.querySelectorAll('[data-target="#addHotelModal"]').forEach(btn => {
       btn.style.display = 'none';
     });
@@ -330,7 +330,7 @@ async function loadRecentReservations() {
       const priceVal = await loadPrice(reservation.id);
       priceTd.textContent = priceVal != null 
         ? Number(priceVal).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) 
-        : '0â‚«';
+        : '0₫';
       row.appendChild(priceTd);
 
       const statusTd = document.createElement('td');
@@ -459,7 +459,7 @@ async function loadOrphanedAccounts() {
         <td>
           <button class="action-btn delete-btn" data-account-id="${acc.id}"
             style="background:#ffebee; color:#c62828; border:none; border-radius:6px; padding:4px 12px; cursor:pointer;">
-            XÃ³a
+            Xóa
           </button>
         </td>
       `;
@@ -2080,7 +2080,7 @@ function initTableActions() {
     });
   }
 
-  // Dashboard recent reservations table cÅ©ng cáº§n edit/delete
+  // Dashboard recent reservations table cũng cần edit/delete
   const recentTableBody = document.querySelector('#recentTableBody');
   if (recentTableBody) {
     recentTableBody.addEventListener('click', (e) => {
