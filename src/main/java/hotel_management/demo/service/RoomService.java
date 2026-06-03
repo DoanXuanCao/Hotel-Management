@@ -36,6 +36,14 @@ public class RoomService {
         .orElseThrow(() -> new EntityNotFoundException("Room not found with ID: " + id));
   }
 
+  public Room getRoomByIdWithLock(UUID id) {
+    if (id == null) {
+      throw new IllegalArgumentException("Room ID cannot be null");
+    }
+    return roomRepository.findByIdWithLock(id)
+        .orElseThrow(() -> new EntityNotFoundException("Room not found with ID: " + id));
+  }
+
   public List<Room> getAllRooms() {
     return roomRepository.findAll();
   }

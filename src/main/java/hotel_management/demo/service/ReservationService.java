@@ -69,13 +69,29 @@ public class ReservationService {
       reservation.setEmployee(employee);
     }
 
+    if (reservation.getCheckin() == null || reservation.getCheckout() == null) {
+      throw new RuntimeException("Ngày check-in và check-out không được để trống.");
+    }
+    if (!reservation.getCheckin().isBefore(reservation.getCheckout())) {
+      throw new RuntimeException("Ngày check-in phải trước ngày check-out.");
+    }
+
     if (req.getReservationRooms() == null || req.getReservationRooms().isEmpty()) {
       throw new RuntimeException("At least one room is required");
     }
 
+    List<ReservationStatus> closedStatuses = List.of(
+        ReservationStatus.CANCELED, ReservationStatus.COMPLETED, ReservationStatus.NO_SHOW);
+
     for (ReservationRoom inputRR : req.getReservationRooms()) {
-      Room room = roomService.getRoomById(
-          inputRR.getRoom().getId());
+      Room room = roomService.getRoomByIdWithLock(inputRR.getRoom().getId());
+
+      long overlapCount = reservationRoomRepository.countOverlappingReservation(
+          room.getId(), reservation.getCheckin(), reservation.getCheckout(), closedStatuses);
+      if (overlapCount > 0) {
+        throw new RuntimeException(
+            "Phòng " + room.getRoomNumber() + " đã được đặt trong khoảng thời gian này.");
+      }
 
       ReservationRoom rr = new ReservationRoom();
       rr.setReservation(reservation);
@@ -188,19 +204,22 @@ public class ReservationService {
     if (newStatus == null || newStatus == oldStatus)
       return;
 
-    RoomStatus targetRoomStatus = null;
     if (newStatus == ReservationStatus.CHECKED_IN) {
-      targetRoomStatus = RoomStatus.OCCUPIED;
-    } else if (newStatus == ReservationStatus.COMPLETED
-        || newStatus == ReservationStatus.CANCELED
-        || newStatus == ReservationStatus.NO_SHOW) {
-      targetRoomStatus = RoomStatus.AVAILABLE;
+      reservation.getReservationRooms()
+          .forEach(rr -> roomService.updateRoomStatus(rr.getRoom().getId(), RoomStatus.OCCUPIED));
+      return;
     }
 
-    if (targetRoomStatus != null) {
-      final RoomStatus finalStatus = targetRoomStatus;
-      reservation.getReservationRooms()
-          .forEach(rr -> roomService.updateRoomStatus(rr.getRoom().getId(), finalStatus));
+    if (newStatus == ReservationStatus.COMPLETED
+        || newStatus == ReservationStatus.CANCELED
+        || newStatus == ReservationStatus.NO_SHOW) {
+      for (ReservationRoom rr : reservation.getReservationRooms()) {
+        long otherCheckedIn = reservationRoomRepository.countOtherCheckedIn(
+            rr.getRoom().getId(), reservation.getId(), ReservationStatus.CHECKED_IN);
+        if (otherCheckedIn == 0) {
+          roomService.updateRoomStatus(rr.getRoom().getId(), RoomStatus.AVAILABLE);
+        }
+      }
     }
   }
 
@@ -260,12 +279,19 @@ public class ReservationService {
   }
 
   @Transactional
-  public Reservation cancelReservation(UUID id) {
+  public Reservation cancelReservation(UUID id, UUID callerProfileId, String callerRole) {
     Reservation reservation = reservationRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Reservation not found with ID: " + id));
+
+    if ("GUEST".equals(callerRole) && callerProfileId != null) {
+      if (!reservation.getGuest().getId().equals(callerProfileId)) {
+        throw new RuntimeException("Bạn chỉ có thể hủy đặt phòng của chính mình.");
+      }
+    }
+
     if (reservation.getStatus() != ReservationStatus.PENDING
         && reservation.getStatus() != ReservationStatus.BOOKED) {
-      throw new RuntimeException("Only PENDING or BOOKED reservations can be cancelled by the guest.");
+      throw new RuntimeException("Chỉ có thể hủy reservation ở trạng thái PENDING hoặc BOOKED.");
     }
     ReservationStatus old = reservation.getStatus();
     reservation.setStatus(ReservationStatus.CANCELED);

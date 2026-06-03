@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import hotel_management.demo.config.JwtUtil;
 import jakarta.persistence.EntityNotFoundException;
 
 import hotel_management.demo.repository.AccountRepository;
@@ -25,13 +26,15 @@ public class AccountService {
   private final PasswordEncoder passwordEncoder;
   private final GuestRepository guestRepository;
   private final EmployeeRepository employeeRepository;
+  private final JwtUtil jwtUtil;
 
-  public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder, GuestRepository guestRepository,
-      EmployeeRepository employeeRepository) {
+  public AccountService(AccountRepository accountRepository, PasswordEncoder passwordEncoder,
+      GuestRepository guestRepository, EmployeeRepository employeeRepository, JwtUtil jwtUtil) {
     this.accountRepository = accountRepository;
     this.passwordEncoder = passwordEncoder;
     this.employeeRepository = employeeRepository;
     this.guestRepository = guestRepository;
+    this.jwtUtil = jwtUtil;
   }
 
   public Account createAccount(Account account) {
@@ -142,7 +145,8 @@ public class AccountService {
     AuthResponse response = new AuthResponse();
     response.setMessage("Login successful");
     response.setRole(acc.getRole());
-    response.setToken("dummy");
+
+    java.util.UUID profileId = null;
 
     if (acc.getRole() == Role.EMPLOYEE) {
       Employee employee = employeeRepository.findByAccountId(acc.getId());
@@ -152,6 +156,7 @@ public class AccountService {
             "Please ask an admin to delete this account and recreate it via the Setting page.");
       }
       response.setEmployeeId(employee.getId());
+      profileId = employee.getId();
     }
 
     if (acc.getRole() == Role.GUEST) {
@@ -160,7 +165,11 @@ public class AccountService {
         throw new RuntimeException("Account '" + acc.getUsername() + "' is misconfigured: no Guest record linked.");
       }
       response.setGuestId(guest.getId());
+      profileId = guest.getId();
     }
+
+    String token = jwtUtil.generateToken(acc.getId(), profileId, acc.getUsername(), acc.getRole().name());
+    response.setToken(token);
 
     return response;
   }

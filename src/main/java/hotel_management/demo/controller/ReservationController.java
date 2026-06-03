@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import hotel_management.demo.constant.ReservationStatus;
@@ -93,11 +95,23 @@ public class ReservationController {
   }
 
   @PutMapping("/{id}/cancel")
-  public ResponseEntity<ReservationDTO> cancelReservation(@PathVariable UUID id) {
+  public ResponseEntity<?> cancelReservation(@PathVariable UUID id) {
     try {
-      return ResponseEntity.ok(reservationMapper.toDTO(reservationService.cancelReservation(id)));
+      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      String role = auth.getAuthorities().stream().findFirst()
+          .map(a -> a.getAuthority().replace("ROLE_", "")).orElse("");
+
+      UUID callerProfileId = null;
+      if (auth.getDetails() instanceof Map<?, ?> details) {
+        String pid = (String) details.get("profileId");
+        if (pid != null && !pid.isEmpty()) callerProfileId = UUID.fromString(pid);
+      }
+
+      return ResponseEntity.ok(reservationMapper.toDTO(
+          reservationService.cancelReservation(id, callerProfileId, role)));
     } catch (RuntimeException e) {
-      return ResponseEntity.badRequest().build();
+      return ResponseEntity.badRequest().body(Map.of("message",
+          e.getMessage() != null ? e.getMessage() : "Cancel failed"));
     }
   }
 
